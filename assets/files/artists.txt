@@ -1,0 +1,13 @@
+artist	origin	career status	gender	first album (year)	studio albums (count)	year of birth	age (years)	age at first album (years)	career start (year)	career end (year)	in business (years)	in business to first album (years)
+Rihanna	Barbados	active	female	2005	7	1988	26	17	2003		11	2
+Britney Spears	United States	active	female	1999	8	1981	33	18	1992		22	7
+Madonna	United States	active	female	1983	12	1958	56	25	1979		35	4
+Whitney Houston	United States	inactive	female	1985	7	1963	49	22	1977	2012	35	8
+Michael Jackson	United States	inactive	male	1972	10	1958	51	14	1968	2009	41	4
+Eminem	United States	active	male	1996	8	1972	42	24	1990		24	6
+Elton John	United Kingdom	active	male	1969	33	1947	67	22	1964		50	5
+Elvis Presley	United States	inactive	male	1956	25	1935	42	21	1953	1977	24	3
+The Beatles	United Kingdom	inactive	group	1963	12				1960	1970	10	3
+U2	Ireland	active	group	1980	12				1976		38	4
+The Black Eyed Peas	United States	active	group	1998	6				1995		19	3
+ABBA	Sweden	inactive	group	1973	8				1972	1982	10	1

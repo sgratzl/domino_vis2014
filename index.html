@@ -1,0 +1,2278 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>Domino</title>
+
+    <meta name="description" content="Extracting, Comparing, and Manipulating Subsets across Multiple Tabular Datasets">
+    <meta name="author" content="Samuel Gratzl">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+        if (window.location.search.match(/print-pdf/gi)) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'css/print/pdf.css';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <script src="lib/js/d3.js" charset="utf-8"></script>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script src="code.js"></script>
+</head>
+
+<body>
+
+<div data-background-transition="default" data-transition-speed="default" class="reveal fade">
+<header>
+    <a href="https://github.com/Caleydo/org.caleydo.view.domino" class="image" id="forkme_github"></a>
+</header>
+<footer>
+    Samuel Gratzl, Johannes Kepler University Linz, Austria
+</footer>
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+<section id="title" data-state="nofooter">
+    <h1>Domino</h1>
+
+    <h3>Extracting, Comparing, and Manipulating Subsets <br>across Multiple Tabular Datasets</h3>
+    <img src="assets/logos/caleydo_text_below.svg" class="fixed caleydo_title">
+
+    <div class="logos">
+        <div>
+            <img class="fixed" src="assets/logos/jku.png">
+        </div>
+        <div>
+            <img class="fixed" src="assets/logos/hms.png">
+        </div>
+        <div>
+            <img class="fixed" src="assets/logos/seas.png">
+        </div>
+    </div>
+    <div class="author_list">
+        <div>
+            <img src="assets/author/gratzl_samuel.jpg"><br>
+            <span><a href="mailto:samuel.gratzl@jku.at"><u>Sam</u>uel Gratzl</a></span>
+        </div>
+        <div><img src="assets/author/streit_marc.jpg"><br>
+            <span>Marc Streit</span>
+        </div>
+        <div><img src="assets/author/gehlenborg_nils.jpg"><br>
+            <span>Nils Gehlenborg</span>
+        </div>
+        <div><img src="assets/author/lex_alexander.jpg"><br>
+            <span>Alexander Lex</span>
+        </div>
+        <div><img src="assets/author/pfister_hanspeter.jpg"><br>
+            <span>Hanspeter Pfister</span>
+        </div>
+    </div>
+    <aside class="notes">
+        Thank you for the introduction and welcome to my talk
+
+        This is joint work done together with Marc Streit, Nils Gehlenborg, Alex Lex, and Hanspeter Pfister
+    </aside>
+</section>
+
+<section id="motivation">
+    <div id="t_artists" style="width: 100%;margin-top: 60px;">
+    <table class="mottable">
+        <caption><i class="fa fa-user"></i>&nbsp;&nbsp;music artists</caption>
+        <thead>
+        <tr>
+            <th class="center artist">artist</th>
+            <th class="center artist">origin</th>
+            <th class="center artist">career status</th>
+            <th class="center artist">gender</th>
+            <th class="center artist">first album</th>
+            <th class="center artist">studio albums</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Rihanna</td>
+            <td class="center">Barbados</td>
+            <td class="center">active</td>
+            <td class="center">female</td>
+            <td class="center">2005</td>
+            <td class="number">7</td>
+        </tr>
+        <tr>
+            <td>Britney Spears</td>
+            <td class="center">US</td>
+            <td class="center">active</td>
+            <td class="center">female</td>
+            <td class="center">1999</td>
+            <td class="number">8</td>
+        </tr>
+        <tr>
+            <td>Whitney Houston</td>
+            <td class="center">US</td>
+            <td class="center">inactive</td>
+            <td class="center">female</td>
+            <td class="center">1985</td>
+            <td class="number">7</td>
+        </tr>
+        <tr>
+            <td>Eminem</td>
+            <td class="center">US</td>
+            <td class="center">active</td>
+            <td class="center">male</td>
+            <td class="center">1996</td>
+            <td class="number">8</td>
+        </tr>
+        <tr>
+            <td>Elton John</td>
+            <td class="center">UK</td>
+            <td class="center">active</td>
+            <td class="center">male</td>
+            <td class="center">1969</td>
+            <td class="number">33</td>
+        </tr>
+        <tr>
+            <td>Elvis Presley</td>
+            <td class="center">US</td>
+            <td class="center">inactive</td>
+            <td class="center">male</td>
+            <td class="center">1956</td>
+            <td class="number">25</td>
+        </tr>
+        <tr>
+            <td>The Beatles</td>
+            <td class="center">UK</td>
+            <td class="center">inactive</td>
+            <td class="center">group</td>
+            <td class="center">1963</td>
+            <td class="number">12</td>
+        </tr>
+        <tr>
+            <td>U2</td>
+            <td class="center">Ireland</td>
+            <td class="center">active</td>
+            <td class="center">group</td>
+            <td class="center">1980</td>
+            <td class="number">12</td>
+        </tr>
+        <tr>
+            <td>ABBA</td>
+            <td class="center">Sweden</td>
+            <td class="center">inactive</td>
+            <td class="center">group</td>
+            <td class="center">1973</td>
+            <td class="number">8</td>
+        </tr>
+        </tbody>    
+    </table>
+    </div>
+    <div class="fragment">
+        <img src="assets/examples/scatterplot_e.png" class="overlay" style="left: 170px; top: 40px; width: 400px;">
+        <img src="assets/parallel_coordinates_e.png" class="overlay" style="left: 800px; width: 750px; top: 30px; ">
+        <img src="assets/examples/scatterplot_matrix_e.png" class="overlay" style="left: 1200px; top: 450px; width: 550px; ">
+        <img src="assets/examples/parallel_sets_e.png" class="overlay" style="left: 30px; top: 500px; width: 1000px; ">
+    </div>
+    <script>
+        onPreviousFragment("div", function() {
+            d3.select('#motivation table').style('opacity','0.1');
+        }, function() {
+            d3.select('#motivation table').style('opacity',null);
+        })
+    </script>
+       
+    <aside class="notes">
+
+    </aside>
+</section>
+
+<section id="relatedwork">
+    <h2>Related Work</h2>
+
+    <div style="margin-top: 80px">
+        <div style="width: 44%; display: inline-block; vertical-align: top; padding-left: 30px; padding-right: 30px;opacity: 1">
+            <p style="text-align: left;"><strong>Flexible Linked Axes</strong> for Multi-variate Data Visualization
+            </p>
+            <img src="assets/flina.png" width="55%" style="margin-top: 40px">
+            <p class="rev">[Claessen and van Wijk, 2011]</p>
+        </div>
+        <div style="width: 47%; display: inline-block; vertical-align: top; padding-left: 30px; padding-right: 30px; opacity: 1">
+            <p style="text-align: left;"><strong>Connected Charts</strong>: Explicit Visualization of Relationships between Data Graphics
+            </p>
+            <img src="assets/connectedCharts.png" width="100%"  style="margin-top: 40px">
+            <p class="rev">[Viau and McGuffin, 2012]</p>
+        </div>
+    </div>
+    <script>
+        addFragment(function() {
+            d3.select('#relatedwork div div:nth-child(2)').transition().style('opacity',0.05);
+        }, function() {
+            d3.select('#relatedwork div div:nth-child(2)').style('opacity',1);
+        });
+        addFragment(function() {
+            d3.select('#relatedwork div div:nth-child(1)').transition().style('opacity',0.05);
+            d3.select('#relatedwork div div:nth-child(2)').transition().style('opacity',1);
+        }, function() {
+            d3.select('#relatedwork div div:nth-child(1)').style('opacity',1);
+            d3.select('#relatedwork div div:nth-child(2)').style('opacity',0.05);
+        });
+        addFragment(function() {
+            d3.select('#relatedwork div div:nth-child(1)').transition().style('opacity',1);
+        }, function() {
+            d3.select('#relatedwork div div:nth-child(1)').style('opacity',0.05);
+        });
+    </script>
+
+    <aside class="notes">
+
+    </aside>
+</section>
+
+<section id="motivation2">
+    <div style="width: 49%;margin-top: 60px; display: inline-block">
+    <table class="mottable">
+        <caption><i class="fa fa-user"></i>&nbsp;&nbsp;music artists</caption>
+        <thead style="font-size: 60%">
+        <tr>
+            <th class="center artist">artist</th>
+            <th class="center artist">origin</th>
+            <th class="center artist">career status</th>
+            <th class="center artist">gender</th>
+            <th class="center artist">first album</th>
+            <th class="center artist">studio albums</th>
+        </tr>
+        </thead>
+        <tbody style="font-size: 60%">
+        <tr>
+            <td>Rihanna</td>
+            <td class="center">Barbados</td>
+            <td class="center">active</td>
+            <td class="center">female</td>
+            <td class="center">2005</td>
+            <td class="number">7</td>
+        </tr>
+        <tr>
+            <td>Britney Spears</td>
+            <td class="center">US</td>
+            <td class="center">active</td>
+            <td class="center">female</td>
+            <td class="center">1999</td>
+            <td class="number">8</td>
+        </tr>
+        <tr>
+            <td>Whitney Houston</td>
+            <td class="center">US</td>
+            <td class="center">inactive</td>
+            <td class="center">female</td>
+            <td class="center">1985</td>
+            <td class="number">7</td>
+        </tr>
+        <tr>
+            <td>Eminem</td>
+            <td class="center">US</td>
+            <td class="center">active</td>
+            <td class="center">male</td>
+            <td class="center">1996</td>
+            <td class="number">8</td>
+        </tr>
+        <tr>
+            <td>Elton John</td>
+            <td class="center">UK</td>
+            <td class="center">active</td>
+            <td class="center">male</td>
+            <td class="center">1969</td>
+            <td class="number">33</td>
+        </tr>
+        <tr>
+            <td>Elvis Presley</td>
+            <td class="center">US</td>
+            <td class="center">inactive</td>
+            <td class="center">male</td>
+            <td class="center">1956</td>
+            <td class="number">25</td>
+        </tr>
+        <tr>
+            <td>The Beatles</td>
+            <td class="center">UK</td>
+            <td class="center">inactive</td>
+            <td class="center">group</td>
+            <td class="center">1963</td>
+            <td class="number">12</td>
+        </tr>
+        <tr>
+            <td>U2</td>
+            <td class="center">Ireland</td>
+            <td class="center">active</td>
+            <td class="center">group</td>
+            <td class="center">1980</td>
+            <td class="number">12</td>
+        </tr>
+        <tr>
+            <td>ABBA</td>
+            <td class="center">Sweden</td>
+            <td class="center">inactive</td>
+            <td class="center">group</td>
+            <td class="center">1973</td>
+            <td class="number">8</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    <div style="width: 49%; display: inline-block; margin-top: 60px">
+    <table id="table_countries" class="mottable">
+        <caption><i class="fa fa-globe"></i> music markets (countries)</caption>
+        <thead style="font-size: 60%">
+        <tr>
+            <th class="center country">market</th>
+            <th class="center country">continent</th>
+            <th class="center country">sold singles</th>
+            <th class="center country">sold albums</th>
+            <th class="center country">retailvalue</th>
+            <th class="center country">population</th>
+        </tr>
+        </thead>
+        <tbody style="font-size: 60%">
+        <tr>
+            <td>US</td>
+            <td>North America</td>
+            <td class="number">1.5M</td>
+            <td class="number">225.8M</td>
+            <td class="number">3635.2M$</td>
+            <td class="number">310.2M</td>
+        </tr>
+        <tr>
+            <td>Germany</td>
+            <td>Europe</td>
+            <td class="number">6.8M</td>
+            <td class="number">98.7M</td>
+            <td class="number">1713.6M$</td>
+            <td class="number">82.3M</td>
+        </tr>
+        <tr>
+            <td>UK</td>
+            <td>Europe</td>
+            <td class="number">2.4M</td>
+            <td class="number">99.8M</td>
+            <td class="number">1388.1M$</td>
+            <td class="number">62.3M</td>
+        </tr>
+        <tr>
+            <td>Australia</td>
+            <td>Australia</td>
+            <td class="number">0.0M</td>
+            <td class="number">24.5M</td>
+            <td class="number">408.0M$</td>
+            <td class="number">21.5M</td>
+        </tr>
+        <tr>
+            <td>Canada</td>
+            <td>North America</td>
+            <td class="number">0.2M</td>
+            <td class="number">25.9M</td>
+            <td class="number">343.2M$</td>
+            <td class="number">33.7M</td>
+        </tr>
+        <tr>
+            <td>Netherlands</td>
+            <td>Europe</td>
+            <td class="number">0.5M</td>
+            <td class="number">16.7M</td>
+            <td class="number">270.2M$</td>
+            <td class="number">16.8M</td>
+        </tr>
+        <tr>
+            <td>Austria</td>
+            <td>Europe</td>
+            <td class="number">0.1M</td>
+            <td class="number">7.5M</td>
+            <td class="number">184.1M$</td>
+            <td class="number">8.2M</td>
+        </tr>
+        <tr>
+            <td>Sweden</td>
+            <td>Europe</td>
+            <td class="number">0.1M</td>
+            <td class="number">13.7M</td>
+            <td class="number">136.8M$</td>
+            <td class="number">9.1M</td>
+        </tr>
+        <tr>
+            <td>Ireland</td>
+            <td>Europe</td>
+            <td class="number">0.2M</td>
+            <td class="number">4.9M</td>
+            <td class="number">77.9M$</td>
+            <td class="number">4.4M</td>
+        </tr>
+    </tbody></table>
+    </div>
+    <div style="width: 100%; position: absolute;top: 23%" class="fragment">
+    <div class="toverlay" style="font-size: 70%;">
+        <table id="table_numberone" class="mottable">
+        <caption><i class="fa fa-user"></i> <i class="fa fa-times"></i> <i class="fa fa-globe"></i>&nbsp;&nbsp;artists' number one hits per music market</caption>
+        <thead>
+        <tr>
+            <th class="center country_artist"></th>
+            <td class="center country">US</td>
+            <td class="center country">UK</td>
+            <td class="center country">GER</td>
+            <td class="center country">CAN</td>
+            <td class="center country">AUS</td>
+            <td class="center country">AUT</td>
+            <td class="center country">IRE</td>
+            <td class="center country">SWE</td>
+            <td class="center country">NLD</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="artist">Rihanna</td>
+            <td class="center">13</td>
+            <td class="center">8</td>
+            <td class="center">5</td>
+            <td class="center">9</td>
+            <td class="center">8</td>
+            <td class="center">5</td>
+            <td class="center">6</td>
+            <td class="center">3</td>
+            <td class="center">1</td>
+        </tr>
+        <tr>
+            <td class="artist">Britney Spears</td>
+            <td class="center">5</td>
+            <td class="center">6</td>
+            <td class="center">3</td>
+            <td class="center">6</td>
+            <td class="center">5</td>
+            <td class="center">3</td>
+            <td class="center">7</td>
+            <td class="center">4</td>
+            <td class="center">4</td>
+        </tr>
+        <tr>
+            <td class="artist">Whitney Houston</td>
+            <td class="center">11</td>
+            <td class="center">4</td>
+            <td class="center">3</td>
+            <td class="center">7</td>
+            <td class="center">3</td>
+            <td class="center">1</td>
+            <td class="center">2</td>
+            <td class="center">2</td>
+            <td class="center">2</td>
+        </tr>
+        <tr>
+            <td class="artist">Eminem</td>
+            <td class="center">5</td>
+            <td class="center">8</td>
+            <td class="center">3</td>
+            <td class="center">4</td>
+            <td class="center">8</td>
+            <td class="center">4</td>
+            <td class="center">7</td>
+            <td class="center">4</td>
+            <td class="center">2</td>
+        </tr>
+        <tr>
+            <td class="artist">Elton John</td>
+            <td class="center">9</td>
+            <td class="center">7</td>
+            <td class="center">3</td>
+            <td class="center">19</td>
+            <td class="center">4</td>
+            <td class="center">1</td>
+            <td class="center">3</td>
+            <td class="center">1</td>
+            <td class="center">4</td>
+        </tr>
+        <tr>
+            <td class="artist">Elvis Presley</td>
+            <td class="center">17</td>
+            <td class="center">21</td>
+            <td class="center">1</td>
+            <td class="center">23</td>
+            <td class="center">12</td>
+            <td class="center">0</td>
+            <td class="center">8</td>
+            <td class="center">1</td>
+            <td class="center">5</td>
+        </tr>
+        <tr>
+            <td class="artist">The Beatles</td>
+            <td class="center">20</td>
+            <td class="center">17</td>
+            <td class="center">12</td>
+            <td class="center">22</td>
+            <td class="center">22</td>
+            <td class="center">9</td>
+            <td class="center">13</td>
+            <td class="center">0</td>
+            <td class="center">22</td>
+        </tr>
+        <tr>
+            <td class="artist">U2</td>
+            <td class="center">2</td>
+            <td class="center">7</td>
+            <td class="center">0</td>
+            <td class="center">14</td>
+            <td class="center">5</td>
+            <td class="center">1</td>
+            <td class="center">19</td>
+            <td class="center">0</td>
+            <td class="center">3</td>
+        </tr>
+        <tr>
+            <td class="artist">ABBA</td>
+            <td class="center">1</td>
+            <td class="center">9</td>
+            <td class="center">9</td>
+            <td class="center">0</td>
+            <td class="center">6</td>
+            <td class="center">3</td>
+            <td class="center">12</td>
+            <td class="center">3</td>
+            <td class="center">10</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </div>
+    <script>
+        onPreviousFragment('div', function() {
+            d3.selectAll('#motivation2 > div > table thead, #motivation2 > div > table tbody').style('opacity', 0.2);
+        }, function() {
+            d3.selectAll('#motivation2 > div > table thead, #motivation2 > div > table tbody').style('opacity', null);
+        })
+    </script>
+</section>
+
+<section id="bigpicture">
+    <h2>Domino</h2>
+
+    <div style="font-size: 150%; height: 3em; line-height: 110%;margin-bottom: 1em; position: relative">
+        <div style="display: inline-block;height: 3em;">&nbsp;<br>Analyse <strong>multiple</strong> tabular datasets by<br>&nbsp;</div>
+        <div class="higher" style="display: inline-block;position: relative;">
+            <div class="higha" style="position: relative;top: 68px;"><span style="opacity: 0">comparing</span></div>
+            <div class="highc" style="opacity: 0;position: relative;">manipulating</div>
+            <div class="highb" style="position: relative;top: -70px;"><span style="opacity: 0">extracting</span></div>
+        </div>
+        <div style="display: inline-block; height: 3em; opacity: 0;" id="subsets">&nbsp;<br>subsets<br>&nbsp;</div>
+    </div>
+
+    <img src="assets/number_one_f.png">
+
+    <script>
+        addFragment(function() {
+            d3.select('#bigpicture .higha span').transition().style('opacity',1);
+            d3.select('#bigpicture #subsets').transition().style('opacity',1);
+            d3.select('#bigpicture .higha').transition().delay(750).style('top','0px');
+            d3.select('#bigpicture .highb span').transition().delay(1250).style('opacity',1);
+            d3.select('#bigpicture .highb').transition().delay(2000).style('top','-0px');//
+            d3.select('#bigpicture .highc').transition().delay(2500).style('opacity',1);
+        }, function() {
+            d3.select('#bigpicture .higha span, #bigpicture .highb span, #bigpicture .highc').interrupt().style('opacity',0);
+            d3.select('#bigpicture .higha').interrupt().style('top','68px');
+            d3.select('#bigpicture .highb').interrupt().style('top','-70px');
+            d3.select('#bigpicture #subsets').interrupt().style('opacity',0);
+        })
+    </script>
+
+    <aside class="notes">
+        notes
+    </aside>
+</section>
+
+<!-- Example of nested vertical slides -->
+<section id="domino">
+    <h2>Domino Visualization Technique</h2>
+    <p style="padding-top: 20px;">basic elements:</p>
+    <div style="" class="left">
+    <ul>
+        <li style=""><strong>blocks</strong> and their</li>
+        <li><strong>relationships</strong></li>
+    </ul>
+    </div>
+
+    <p class="bigger" style="margin-top: 100px;">representing:</p>
+    <div class="left">
+    <ul>
+        <li><strong>subsets</strong></li>
+        <li>associated <strong>data</strong></li>
+        <li>and <strong>relationships</strong> between</li>
+    </ul>
+    </div>
+
+    <svg id="parco" style="position: absolute; left: 40%; width: 50%; height: 100%; top: 25%; opacity: 1;" class="fixed">
+        <g transform="scale(2,2)translate(-76.89911,-349.29272)">
+            <g id="parco_lines"
+               style="fill:none;stroke:#cccccc;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1">
+                <path d="m 128.33768,564.84389 164.88781,-3.29776 42.32121,0 135.75763,-4.39701 16.76359,0.27481"/>
+                <path d="m 128.30156,516.94989 19.19041,-0.27415 146.12122,-41.67059 37.01007,0.27414 139.26751,5.75713 18.64211,0.54829"/>
+                <path d="m 128.33768,528.01894 19.23691,0 145.37609,-35.17607 37.9242,0.27482 139.05538,-11.81696 19.51173,0"/>
+                <path d="m 127.78805,529.66782 19.51173,-0.54963 145.6509,-14.8399 38.47382,0 139.87983,12.09177 17.31322,0.82444"/>
+                <path d="m 129.71175,532.41595 17.86284,-0.27481 141.80352,21.98504 41.77158,0.54962 157.46786,0.27482"/>
+                <path d="m 128.33768,539.01146 19.23691,-0.27481 142.90277,20.33616 197.31575,1.09925"/>
+                <path d="m 128.61249,548.3551 19.23691,-0.27481 141.80352,2.19851 41.22196,0.27481 139.3302,-3.02294 18.13766,-0.27482"/>
+                <path d="m 127.78805,555.50024 19.78654,0 145.10128,-8.24439 37.09975,-0.54962 158.2923,0.54962"/>
+                <path d="m 128.33768,558.798 18.68729,0.27481 145.92571,-4.67182 36.82494,0.27481 158.01749,1.09926"/>
+                <path d="m 128.06287,563.46982 19.23691,0.82444 142.62796,-4.67182 40.67232,0 157.74268,2.47332"/>
+                <path d="m 128.06287,567.04239 19.23691,-0.54963 146.20053,-1.09925 36.82494,-0.54962 157.19305,0.27481"/>
+                <path d="m 127.78805,368.9022 361.10431,0.54963"/>
+            </g>
+            <g id="parco_labels" style="font-size:13px;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff; stroke:none;font-family:Arial;">
+                <text x="76.042175" y="358.90701">population (million)</text>
+                <text x="272.88092" y="359.45532">retailvalue ($)</text>
+                <text x="425.85587" y="359.45529">sold albums (absolute)</text>
+            </g>
+            <g id="parco_axeslabels" transform="translate(0.37715263,0.1408925)"
+               style="font-size:9px;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff; stroke:none;font-family:Arial;">
+                <text x="131.13713" y="380.99734">310</text>
+                <text x="131.13713" y="386.86234">300</text>
+                <text x="131.13713" y="419.37817">250</text>
+                <text x="131.13713" y="451.46732">200</text>
+                <text x="131.13713" y="483.81686">150</text>
+                <text x="131.13713" y="515.81769">100</text>
+                <text x="131.13713" y="547.9068">50</text>
+                <text x="131.13713" y="567.67883">0</text>
+                <text x="314.04129" y="567.38519">0</text>
+                <text x="314.04129" y="525.7478">1000</text>
+                <text x="314.04129" y="470.75751">2000</text>
+                <text x="314.04129" y="415.18564">3000</text>
+                <text x="314.04129" y="380.67047">3635</text>
+                <text x="491.20786" y="380.16113">226</text>
+                <text x="491.20786" y="402.99576">200</text>
+                <text x="491.20786" y="447.729">150</text>
+                <text x="491.20786" y="491.98053">100</text>
+                <text x="491.20786" y="536.03815">50</text>
+                <text x="491.20786" y="567.25781">0</text>
+            </g>
+            <g id="parco_axes"
+               style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1">
+                <path d="m 128.1302,369.45792 -0.0685,200.05997"/>
+                <path d="m 122.88713,569.7235 10.41765,0"/>
+                <path d="m 123.40116,537.71665 9.38959,-0.0685"/>
+                <path d="m 123.40116,504.68174 9.38959,-0.0685"/>
+                <path d="m 123.40116,472.60635 9.38959,-0.0685"/>
+                <path d="m 123.40116,440.5995 9.38959,-0.0685"/>
+                <path d="m 123.40116,408.61386 9.38959,-0.0685"/>
+                <path d="m 123.40116,375.56203 9.38959,-0.0685"/>
+                <path d="m 123.40116,369.64953 9.38959,-0.0685"/>
+                <path d="m 311.67614,369.40946 -0.0685,200.05997"/>
+                <path d="m 488.17256,369.50639 -0.0685,200.05997"/>
+                <path d="m 306.9471,369.55261 9.38959,-0.0685"/>
+                <path d="m 306.9471,404.44604 9.38959,-0.0685"/>
+                <path d="m 306.9471,459.59704 9.38959,-0.0685"/>
+                <path d="m 306.9471,514.65111 9.38959,-0.0685"/>
+                <path d="m 306.9471,569.80211 9.38959,-0.0685"/>
+                <path d="m 483.44351,569.80211 9.38959,-0.0685"/>
+                <path d="m 483.44351,525.60377 9.38959,-0.0685"/>
+                <path d="m 483.44351,480.72695 9.38959,-0.0685"/>
+                <path d="m 483.44351,436.72246 9.38959,-0.0685"/>
+                <path d="m 483.44351,392.62105 9.38959,-0.0685"/>
+                <path d="m 483.44351,369.74647 9.38959,-0.0685"/>
+            </g>
+            <g id="paro_axesbox"
+               style="fill:#ffffff;stroke:none;">
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="366.99716"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="514.08264"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="526.00458"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="529.97858"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="537.10266"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="546.0199"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="553.96783"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="557.11792"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="561.96423"/>
+                <rect width="4.1193557" height="4.0709109" x="126.03628" y="565.16278"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="563.2243"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="559.35193"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="557.12445"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="553.11505"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="548.6944"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="545.16473"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="545.16473"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="512.06128"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="491.0889"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="473.06363"/>
+                <rect width="4.1193557" height="4.0709109" x="309.58221" y="367.07092"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="367.07092"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="479.02066"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="479.02066"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="479.98993"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="525.15753"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="544.05817"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="546.19055"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="553.07233"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="556.07703"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="558.9848"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="561.60181"/>
+                <rect width="4.1193557" height="4.0709109" x="486.07864" y="563.24957"/>
+            </g>
+        </g>
+    </svg>
+    <div style="position: absolute; left: 41%; top: 25%; width: 60%; height: 62%; padding-top: 18px;">
+    <svg width="100%" height="100%" id="parco_overlay">
+    <g>
+        <g class="fragment" data-fragment-index="0">
+        <rect width="100" ry="5" rx="5" x="40" height="85%" y="10" class="blockrect"></rect>
+        <rect x="410" width="100" ry="5" rx="5" height="85%" y="10" class="blockrect"></rect>
+        <rect width="100" x="770" ry="5" rx="5" height="85%" y="10" class="blockrect"></rect>
+        </g>
+        <g class="fragment" data-fragment-index="1">
+        <rect ry="5" rx="5" height="80%" y="25" width="247" x="153" class="relrect"></rect>
+        <rect width="240" x="520" ry="5" rx="5" height="80%" y="25" class="relrect"></rect>
+        </g>
+    </g>
+    </svg>
+    </div>
+    <img class="fragment fixed" data-fragment-index="2" style="position: absolute; left: 42.7%; top: 40%; width: 44%;" src="assets/parallel_coordinate_c.png">
+    <script>
+        /*addFragment(function() {
+            d3.selectAll('#parco_axeslabels, #paro_axesbox, #parco_labels').transition().style('fill','#00A650');
+            d3.selectAll('#parco_axes').transition().style('stroke','#00A650').style('stroke-width','2px');
+        }, function() {
+
+        });
+        addFragment(function() {
+            d3.selectAll('#parco_lines').transition().style('stroke','#F79646').style('stroke-width','2px');
+        }, function() {
+
+        });
+        */
+        onPreviousFragment('img', function() {
+            var $base = d3.select('#domino');
+            $base.select('#parco').transition().style('opacity',0);
+            $base.select('#parco_overlay g').transition().duration(1000).attr('transform','translate(0,80)scale(1,0.68)');
+        }, function() {
+            var $base = d3.select('#domino');
+            $base.select('#parco').style('opacity',1);
+            $base.select('#parco_overlay g').attr('transform',null);
+        });
+    </script>
+    <aside class="notes">
+        notes
+    </aside>
+</section>
+
+<section id="blocks">
+    <h2>Block Types</h2>
+
+    <div>
+        <svg width="71%" height="600">
+
+            <g transform="scale(2.6,2.6)translate(177.5,-289.86414)" >
+                <text x="-92.25" y="307.36218" style="font-size:16px;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#eeeeee;stroke:none;font-family:Lato;"><tspan x="-90.703125" y="307.36218" >Partitioned Blocks </tspan></text>
+                <text x="80" y="307.36218" style="font-size:16px;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#eeeeee;stroke:none;font-family:Lato;"><tspan x="80" y="307.36218" >Numerical Blocks</tspan></text>
+                <text x="254.9375" y="307.36218" style="font-size:16px;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#eeeeee;stroke:none;font-family:Lato;"><tspan x="254.9375" y="307.36218" style="font-size:16px;text-align:center;line-height:125%;text-anchor:middle;font-family:Lato;">Matrix Block</tspan></text>
+                <g style="color:#000000;stroke:none;stroke-width:3;" id="bacic_num_block">
+                    <rect width="50" height="25" x="95" y="422.36218" style="fill:#ababff;"/>
+                    <rect width="50" height="25" x="95" y="447.36218" style="fill:#d3d3ff;"/>
+                    <rect width="50" height="25" x="95" y="397.36218" style="fill:#8383ff;"/>
+                    <rect width="50" height="25" x="95" y="372.36218" style="fill:#5b5bff;"/>
+                    <rect width="50" height="25" x="95" y="347.36218" style="fill:#3333ff;"/>
+                    <rect width="50" height="25" x="95" y="323.36218" style="fill:#0b0bff;"/>
+                    <rect width="50" height="150" x="94.5" y="322.86218" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;" />
+                </g>
+                <g transform="translate(-85,0)" >
+                    <use xlink:href="#bacic_num_block" />
+                </g>
+                <g>
+                    <rect width="51" height="99" x="-161" y="322.36218" style="color:#000000;fill:#ff6f6f;stroke:none;stroke-width:15;" />
+                    <rect width="51" height="49.000008" x="-161" y="424.36218" style="color:#000000;fill:#ffbfbf;stroke:none;stroke-width:15;" />
+                    <path d="m -110.5,424.8622 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;" />
+                </g>
+                <g>
+                    <rect width="51" height="52.000019" x="-81" y="322.36218" style="fill:#ff6f6f;" />
+                    <rect width="51" height="94" x="-81" y="379.36218" style="fill:#ffbfbf;" />
+                    <path d="m -30.5,378.8622 0,94 -50,0 0,-94 z m -50,-4 0,-52.00001 50,0 0,52.00001 z" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;" />
+                </g>
+                <g id="block_idtypes" class="fragment" data-fragment-index="3">
+                    <text x="-10.949219" y="500.41199" style="font-size:13px;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#eeeeee;stroke:none;font-family:Lato;"><tspan class="fa"></tspan><tspan> artists</tspan></text>
+                    <text x="159.05078" y="500.41202" style="font-size:13px;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#eeeeee;stroke:none;font-family:Lato;"><tspan class="fa"></tspan><tspan> countries</tspan></text>
+                    <path d="m -160.5,472.86219 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 9.5,472.86219 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m -110.5,472.86219 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 59.5,472.86219 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 330.5,472.86219 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 94.5,322.86219 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 180.5,472.86219 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 144.4754,322.90674 0,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 0,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m -30.5,322.86219 0,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 0,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 180.5,322.86219 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m -14.5,500.86219 -80,0 0,-1.16666 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 5,-5.83334 5,5.83334 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 155.5,500.86219 -10,0 0,-6 -10,0 0,6 -10,0 0,-6 -10,0 0,6 -10,0 0,-6 -10,0 0,6 -10,0 0,-6 -10,0 0,6 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m 180.5,472.86219 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    <path d="m -80.5,322.86219 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 0,10 -6,0 0,10 6,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt" />
+                    </g>
+                <g style="stroke:none;">
+                    <rect width="150" height="150" x="180.5" y="322.86218" style="color:#000000;fill:#afe9dd;stroke:#000000;stroke-width:1;stroke-miterlimit:4;" />
+                    <rect width="25" height="25" x="181" y="422.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="181" y="447.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="181" y="397.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="181" y="372.36218" style="fill:#60d4bb;" />
+                    <rect width="25" height="25" x="181" y="347.36218" style="fill:#41cbae;" />
+                    <rect width="25" height="25" x="181" y="323.36218" style="fill:#31b398;" />
+                    <rect width="25" height="25" x="205" y="422.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="205" y="447.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="205" y="397.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="205" y="372.36218" style="fill:#60d4bb;" />
+                    <rect width="25" height="25" x="205" y="347.36218" style="fill:#41cbae;" />
+                    <rect width="25" height="25" x="205" y="323.36218" style="fill:#41cbae;" />
+                    <rect width="25" height="25" x="230" y="422.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="230" y="447.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="230" y="397.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="230" y="372.36218" style="fill:#60d4bb;" />
+                    <rect width="25" height="25" x="230" y="347.36218" style="fill:#60d4bb;" />
+                    <rect width="25" height="25" x="230" y="323.36218" style="fill:#60d4bb;" />
+                    <rect width="25" height="25" x="255" y="422.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="255" y="447.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="255" y="397.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="255" y="372.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="255" y="347.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="255" y="323.36218" style="fill:#80dcc9;" />
+                    <rect width="25" height="25" x="280" y="422.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="280" y="447.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="280" y="397.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="280" y="372.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="280" y="347.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="280" y="323.36218" style="fill:#9fe5d6;" />
+                    <rect width="25" height="25" x="305" y="422.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="305" y="447.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="305" y="397.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="305" y="372.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="305" y="347.36218" style="fill:#beeee3;" />
+                    <rect width="25" height="25" x="305" y="323.36218" style="fill:#beeee3;" />
+                </g>
+            </g>
+        </svg>
+    </div>
+    <div style="text-align: center">
+        <div style="display: inline-block; width: 22%; vertical-align: top;" class="fragment" data-fragment-index="0">
+            <ul style="padding: 0px 20px;" class="fa-ul">
+                <li><i class="fa-li fa fa-user"></i> gender</li>
+                <li><i class="fa-li fa fa-user"></i> origin</li>
+                <li><i class="fa-li fa fa-globe"></i> continent</li>
+            </ul>
+        </div>
+        <div style="display: inline-block; width: 23%; vertical-align: top" class="fragment" data-fragment-index="1">
+            <ul style="padding: 0px 20px;" class="fa-ul">
+                <li><i class="fa-li fa fa-user"></i> age</li>
+                <li><i class="fa-li fa fa-user"></i> album count</li>
+                <li><i class="fa-li fa fa-globe"></i> population</li>
+            </ul>
+        </div>
+        
+        <div style="display: inline-block; width: 27%; vertical-align: top" class="fragment" data-fragment-index="2">
+            <ul style="padding: 0px 20px;" class="fa-ul">
+                <li><i class="fa-li fa fa-user"></i> <i style="margin-left: -0.2em" class="fa fa-times"></i> <i class="fa fa-globe"></i>&nbsp;&nbsp; # of #1 hits </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section id="block-representation">
+    <h2>Multiform Visualization</h2>
+
+    <img style="padding-top: 1em;" src="assets/multiform.png" class="fixed" width="80%">
+
+    <p class="rev">[Lex et al., 2011]</p>
+</section>
+
+<section id="combined">
+<svg width="1900" height="1080" style="margin-top: 10px; ">
+  <g id="combined_all" transform="translate(0,100)" >
+  <g transform="scale(1.4,1.4)translate(-50.888672,-310.86218)">
+  <g id="strat1_g" transform="translate(640,0)"><g id="strat1_e" class="example" transform="translate(0,0)">
+      <text id="text3121" y="691.35632" x="50.107422" style="font-size:20px;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:white;stroke:none;" xml:space="preserve"><tspan y="691.35632" x="50.107422" id="tspan3123">career status</tspan></text>
+      <text transform="matrix(0,-1,1,0,0,0)" id="text3133" y="70" x="-632.36218" style="font-size:20px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:white;stroke:none;" xml:space="preserve"><tspan y="70" x="-632.36218" id="tspan3135">artist</tspan></text>
+      <image xlink:href="assets/sequence/s.png" y="532.36218" x="80" id="image4373" height="141" width="22"></image>
+    </g><g id="strat1_c">
+      <path id="path3245" d="m 61,467.36218 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" d="m 108.83334,467.36218 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 L 110,467.36218 z" id="path3256"></path>
+      <rect y="316.86215" x="60.5" height="99" width="51" id="rect3133" style="color:#000000;fill:#ff6f6f;stroke:none;stroke-width:15;"></rect>
+      <rect style="color:#000000;fill:#ffbfbf;stroke:none;stroke-width:15;" id="rect3135" width="51" height="49.000008" x="60.5" y="418.86215"></rect>
+      <path id="rect4159" d="m 111,419.36218 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" style="color:#000000;fill:none;stroke:#000000;stroke-width:1;"></path>
+    </g></g>
+  <g id="num1_g" transform="translate(640,0)" opacity="0"><g id="num1_e" class="example" transform="translate(0,0)"><path class="arrow" id="path3146" d="m 140,594.56837 0,30 m 15,-15 -30,0"></path>
+      <text id="text3125" y="691.92273" x="169.79492" style="font-size:20px;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:white;stroke:none;" xml:space="preserve"><tspan y="691.92273" x="169.79492" id="tspan3127"># of studio albums</tspan></text>
+      <image xlink:href="assets/sequence/n.png" y="532.36218" x="170" id="image4384" height="141" width="63"></image>
+    </g><g id="num1_c">
+      <path id="path3245-1" d="m 172.50001,467.34859 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" d="m 222.50001,467.34859 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" id="path3256-7"></path>
+      <rect y="416.8486" x="173" height="25" width="50" id="rect3837" style="color:#000000;fill:#ababff;stroke:none;stroke-width:3;"></rect>
+      <rect y="441.8486" x="173" height="25" width="50" id="rect3839" style="color:#000000;fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+      <rect y="391.8486" x="173" height="25" width="50" id="rect3841" style="color:#000000;fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+      <rect style="color:#000000;fill:#5b5bff;stroke:none;stroke-width:3;" id="rect3843" width="50" height="25" x="173" y="366.8486"></rect>
+      <rect y="341.8486" x="173" height="25" width="50" id="rect3845" style="color:#000000;fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+      <rect style="color:#000000;fill:#0b0bff;stroke:none;stroke-width:3;" id="rect3847" width="50" height="24.000002" x="173" y="317.84863"></rect>
+      <rect y="317.34863" x="172.5" height="150" width="50" id="rect4153" style="color:#000000;fill:none;stroke:#000000;stroke-width:1;;"></rect>
+      <rect style="color:#000000;fill:#ababff;stroke:none;stroke-width:3;" id="rect3132" width="50" height="25" x="173" y="416.8486"></rect>
+      <rect style="color:#000000;fill:#d3d3ff;stroke:none;stroke-width:3;" id="rect3134" width="50" height="25" x="173" y="441.8486"></rect>
+      <rect y="366.8486" x="173" height="25" width="50" id="rect3136" style="color:#000000;fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+      <rect style="color:#000000;fill:#8383ff;stroke:none;stroke-width:3;" id="rect3142" width="50" height="25" x="173" y="391.8486"></rect>
+      <rect y="317.84863" x="173" height="24.000002" width="50" id="rect3144" style="color:#000000;fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+      <rect y="441.8486" x="173" height="25" width="50" id="rect3146" style="color:#000000;fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+      <rect style="color:#000000;fill:#5b5bff;stroke:none;stroke-width:3;" id="rect3148" width="50" height="25" x="173" y="366.8486"></rect>
+    </g><path class="arrow" d="m 140,377.36218 0,30 m 15,-15 -30,0" id="path4253"></path></g>
+  <g id="combined_g" transform="translate(530,0)" opacity="0">
+      <path class="arrow" id="follow"
+            d="m 245.66644,385.36218 29.33333,0 m -9.33333,-10 14.66666,16 -14.66666,18 m 9.33333,-12 -29.33333,0"></path>
+      <g id="combined_e" class="example" transform="translate(0,0)">
+         <path class="arrow"
+            d="m 245.66644,602.56837 29.33333,0 m -9.33333,-10 14.66666,16 -14.66666,18 m 9.33333,-12 -29.33333,0"></path>
+        <image xlink:href="assets/sequence/1.png" width="75" height="141" x="320" y="532.36218"></image>
+      </g>
+      <g id="combined_c">
+          <path d="m 409.83334,467.36218 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 L 411,467.36218 z"
+                style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+          <rect y="419.36218" x="360" height="25" width="50" id="rect3138"
+                style="fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+          <rect y="390.36218" x="360" height="25" width="50" id="rect3154"
+                style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+          <rect style="fill:#ababff;stroke:none;stroke-width:3;" id="rect3140" width="50" height="25"
+                x="360" y="442.36218"></rect>
+          <rect style="fill:#8383ff;stroke:none;stroke-width:3;" id="rect3150" width="50" height="25"
+                x="360" y="366.36218"></rect>
+          <rect y="317.36218" x="360" height="24.000002" width="50" id="rect3152"
+                style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+          <rect style="fill:#5b5bff;stroke:none;stroke-width:3;" id="rect3156" width="50" height="25"
+                x="360" y="341.36218"></rect>
+          <path style="fill:none;stroke:#000000;stroke-width:1;"
+                d="m 410,419.36219 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" id="path3961"></path>
+          <rect style="fill:#ffbfbf;stroke:none;stroke-width:15;" id="rect3255" width="51"
+                height="49.000008" x="309.5" y="418.86215"></rect>
+          <rect y="316.86215" x="309.5" height="99" width="51" id="rect3253"
+                style="fill:#ff6f6f;stroke:none;stroke-width:15;"></rect>
+          <path id="path3257" d="m 360,419.36218 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z"
+                style=";fill:none;stroke:#000000;stroke-width:1;"></path>
+          <path d="m 311,467.36218 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z"
+                style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      </g>
+  </g>
+  <g id="matrix_g" transform="translate(440,0)" opacity="0">
+      <g id="matrix_e" class="example" transform="translate(0,0)">
+          <path class="arrow" id="path3144" d="m 440,594.56837 0,30 m 15,-15 -30,0"></path>
+          <text id="text3117" y="691.92273" x="459.79492" style="font-size:20px;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:white;stroke:none;" xml:space="preserve"><tspan y="691.92273" x="459.79492" id="tspan3119"># of number one hits</tspan></text>
+      <text id="text3137" y="522.36218" x="510" style="font-size:20px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:white;stroke:none;" xml:space="preserve"><tspan y="522.36218" x="510" id="tspan3139">country</tspan></text>
+          <image xlink:href="assets/sequence/m.png" y="532.36218" x="480" id="image4395" height="137"
+                 width="137"></image>
+</g><g id="matrix_c">
+      <path d="m 470,317.36218 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" d="m 470,467.36218 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z" id="path3297"></path>
+      <path d="m 619.83334,467.36218 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 L 621,467.36218 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" d="m 471,467.36218 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" id="path3375"></path>
+      <rect y="317.36218" x="471" height="150" width="150" style="fill:#afe9dd;stroke:#010101;stroke-width:1;;"/>
+      <rect y="416.86218" x="471.5" height="25.000002" width="24" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="441.86218" x="471.5" height="25.000002" width="24" style="fill:#beeee3;stroke:none;"/>
+      <rect y="391.86218" x="471.5" height="25.000002" width="24" style="fill:#80dcc9;stroke:none;"/>
+      <rect style="fill:#60d4bb;stroke:none;" width="24" height="25.000002" x="471.5" y="366.86218"/>
+      <rect y="341.86218" x="471.5" height="25.000002" width="24" style="fill:#41cbae;stroke:none;"/>
+      <rect style="fill:#31b398;stroke:none;" width="24" height="24.000004" x="471.5" y="317.86218"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="495.5" y="416.86218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="495.5" y="441.86218"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="25" x="495.5" y="391.86218"/>
+      <rect y="366.86218" x="495.5" height="25" width="25" style="fill:#60d4bb;stroke:none;"/>
+      <rect style="fill:#41cbae;stroke:none;" width="25" height="25" x="495.5" y="341.86218"/>
+      <rect y="317.86218" x="495.5" height="24.000002" width="25" style="fill:#41cbae;stroke:none;"/>
+      <rect y="416.86218" x="520.5" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="441.86218" x="520.5" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect y="391.86218" x="520.5" height="25" width="25" style="fill:#80dcc9;stroke:none;"/>
+      <rect style="fill:#60d4bb;stroke:none;" width="25" height="25" x="520.5" y="366.86218"/>
+      <rect y="341.86218" x="520.5" height="25" width="25" style="fill:#60d4bb;stroke:none;"/>
+      <rect style="fill:#60d4bb;stroke:none;" width="25" height="24.000002" x="520.5" y="317.86218"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="545.5" y="416.86218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="545.5" y="441.86218"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="25" x="545.5" y="391.86218"/>
+      <rect y="366.86218" x="545.5" height="25" width="25" style="fill:#80dcc9;stroke:none;"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="25" x="545.5" y="341.86218"/>
+      <rect y="317.86218" x="545.5" height="24.000002" width="25" style="fill:#80dcc9;stroke:none;"/>
+      <rect y="416.86218" x="570.5" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="441.86218" x="570.5" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect y="391.86218" x="570.5" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="570.5" y="366.86218"/>
+      <rect y="341.86218" x="570.5" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="24.000002" x="570.5" y="317.86218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="595.5" y="416.86218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="595.5" y="441.86218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="595.5" y="391.86218"/>
+      <rect y="366.86218" x="595.5" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="595.5" y="341.86218"/>
+      <rect y="317.86218" x="595.5" height="24.000002" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="24" height="25.000002" x="471.5" y="416.86218"/>
+      <rect style="fill:#41cbae;stroke:none;" width="24" height="25.000002" x="471.5" y="341.86218"/>
+      <rect y="416.86218" x="495.5" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="341.86218" x="495.5" height="25" width="25" style="fill:#41cbae;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="520.5" y="416.86218"/>
+      <rect style="fill:#60d4bb;stroke:none;" width="25" height="25" x="520.5" y="341.86218"/>
+      <rect y="416.86218" x="545.5" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="341.86218" x="545.5" height="25" width="25" style="fill:#80dcc9;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="570.5" y="416.86218"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="570.5" y="341.86218"/>
+      <rect y="416.86218" x="595.5" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect y="341.86218" x="595.5" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+  </g><path class="arrow" d="m 440,377.36218 0,30 m 15,-15 -30,0" id="path4249"></path>
+  </g>
+  <g id="matcombined_g" transform="translate(280,0)" opacity="0">
+      <g id="matcombined_e" class="example" transform="translate(0,0)">
+      <path class="arrow"
+            d="m 646.04265,602.56835 28.95733,0 m -9.2137,-10.00004 14.47866,16.00007 -14.47866,18.00006 m 9.2137,-12.00004 -28.95733,0"></path>
+      <image xlink:href="assets/sequence/2.png" width="209" height="141" x="750"
+             y="532.36218"></image>
+      </g>
+      <g id="matcombined_c">
+          <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"
+                d="m 959.83334,467.36218 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 L 961,467.36218 z"
+                id="path3371"></path>
+          <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"
+                d="m 711,467.36218 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z"
+                id="path3379"></path>
+          <path d="m 810,467.36218 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z"
+                style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+          <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"
+                d="m 810,317.36218 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z"
+                id="path3385"></path>
+      <rect y="419.36218" x="760" height="25" width="50" style="fill:#3333ff;stroke:none;"/>
+      <rect style="fill:#ababff;stroke:none;" width="50" height="25" x="760" y="442.36218"/>
+      <rect style="fill:#8383ff;stroke:none;" width="50" height="25" x="760" y="366.36218"/>
+      <rect y="317.36218" x="760" height="24.000002" width="50" style="fill:#0b0bff;stroke:none;"/>
+      <rect y="390.36218" x="760" height="25" width="50" style="fill:#d3d3ff;stroke:none;"/>
+      <rect style="fill:#5b5bff;stroke:none;" width="50" height="25" x="760" y="341.36218"/>
+      <path style="fill:none;stroke:#000000;stroke-width:1;" d="m 810,419.36219 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" id="path4140"></path>
+      <rect y="442.36218" x="810" height="25.000002" width="24" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="419.36218" x="810" height="23.000013" width="24" style="fill:#41cbae;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="834" y="442.36218"/>
+      <rect style="fill:#41cbae;stroke:none;" width="25" height="23.000011" x="834" y="419.36218"/>
+      <rect y="442.36218" x="859" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="419.36218" x="859" height="23.000011" width="25" style="fill:#60d4bb;stroke:none;"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="884" y="442.36218"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="23.000011" x="884" y="419.36218"/>
+      <rect y="442.36218" x="909" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="419.36218" x="909" height="23.000011" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="934" y="442.36218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="23.000011" x="934" y="419.36218"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="24" height="25.000002" x="810" y="366.36218"/>
+      <rect y="341.36218" x="810" height="25.000002" width="24" style="fill:#60d4bb;stroke:none;"/>
+      <rect y="317.36218" x="810" height="24.000004" width="24" style="fill:#31b398;stroke:none;"/>
+      <rect y="366.36218" x="834" height="25" width="25" style="fill:#80dcc9;stroke:none;"/>
+      <rect style="fill:#60d4bb;stroke:none;" width="25" height="25" x="834" y="341.36218"/>
+      <rect style="fill:#41cbae;stroke:none;" width="25" height="24.000002" x="834" y="317.36218"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="25" x="859" y="366.36218"/>
+      <rect y="341.36218" x="859" height="25" width="25" style="fill:#60d4bb;stroke:none;"/>
+      <rect y="317.36218" x="859" height="24.000002" width="25" style="fill:#60d4bb;stroke:none;"/>
+      <rect y="366.36218" x="884" height="25" width="25" style="fill:#80dcc9;stroke:none;"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="25" x="884" y="341.36218"/>
+      <rect style="fill:#80dcc9;stroke:none;" width="25" height="24.000002" x="884" y="317.36218"/>
+      <rect style="fill:#9fe5d6;stroke:none;" width="25" height="25" x="909" y="366.36218"/>
+      <rect y="341.36218" x="909" height="25" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="317.36218" x="909" height="24.000002" width="25" style="fill:#9fe5d6;stroke:none;"/>
+      <rect y="366.36218" x="934" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="934" y="341.36218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="24.000002" x="934" y="317.36218"/>
+      <rect style="fill:#beeee3;stroke:none;" width="24" height="25.000002" x="810" y="390.36218"/>
+      <rect y="390.36218" x="834" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="859" y="390.36218"/>
+      <rect y="390.36218" x="884" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <rect style="fill:#beeee3;stroke:none;" width="25" height="25" x="909" y="390.36218"/>
+      <rect y="390.36218" x="934" height="25" width="25" style="fill:#beeee3;stroke:none;"/>
+      <path d="m 959.5,419.36219 0,48 -149.5,0 0,-48 z m -149.5,-4 0,-98.00001 149.5,0 0,98.00001 z" style="fill:none;stroke:#000000;stroke-width:1;"></path>
+      <rect y="316.86215" x="710.5" height="99" width="51" style="fill:#ff6f6f;stroke:none;stroke-width:15;"/>
+      <rect style="fill:#ffbfbf;stroke:none;stroke-width:15;" width="51" height="49.000008" x="710.5" y="418.86215"/>
+      <path d="m 761,419.36218 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" style="fill:none;stroke:#000000;stroke-width:1;"></path>
+  </g><path d="m 646.04265,385.36211 28.95733,0 m -9.2137,-10.00004 14.47866,16.00007 -14.47866,18.00006 m 9.2137,-12.00004 -28.95733,0" class="arrow"></path></g>
+  <g id="continent_g" transform="translate(-199,160)" opacity="1"><path class="arrow" d="m 990,377.36218 0,30 m 15,-15 -30,0" transform="translate(95,-55)"></path><g id="continent_e" class="example" transform="translate(0,0)">
+      <path class="arrow" d="m 990,594.56837 0,30 m 15,-15 -30,0" transform="translate(95,-60)"></path>
+      <text id="text3129" y="622.36218" x="1052" style="font-size:20px;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:white;stroke:none;" xml:space="preserve"><tspan y="632.36218" x="1052" id="tspan3131">continent</tspan></text>
+      <image xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="assets/sequence/s2.png" y="582.36218" x="1020" height="22" width="145"></image>
+  </g><g id="continent_c">
+      <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" d="m 1010,417.36218 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z" id="path3389"></path>
+      <path id="path3391" d="m 1010,367.36218 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      <rect transform="matrix(0,-1,1,0,0,0)" y="1009.5" x="-417.86218" height="99" width="51" id="rect3277" style="color:#000000;fill:#ff6f6f;stroke:none;stroke-width:15;"></rect>
+      <rect transform="matrix(0,-1,1,0,0,0)" style="color:#000000;fill:#ffbfbf;stroke:none;stroke-width:15;" id="rect3279" width="51" height="49.000008" x="-417.86218" y="1111.5"></rect>
+      <path id="path3281" d="m 1112,367.36217 48,0 0,50 -48,0 z m -4,50 -98,0 0,-50 98,0 z" style="color:#000000;fill:none;stroke:#000000;stroke-width:1;"></path>
+  </g></g>
+  <g id="result_g" opacity="0" transform="translate(-195,160)"><path class="arrow" d="m 1175.6666,385.36218 29.3334,0 m -9.3334,-10 14.6667,16 -14.6667,18 m 9.3334,-12 -29.3334,0"></path>
+      <g id="result_c">
+          <path id="path3373"
+                d="m 1489.8333,467.36218 0,-150 1.1667,0 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5.00002 -5.8333,5 5.8333,5 -5.8333,4.99998 z"
+                style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+          <path id="path3377"
+                d="m 1241,467.36218 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z"
+                style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+          <path style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"
+                d="m 1340,517.36218 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z"
+                id="path3383"></path>
+          <path id="path3387"
+                d="m 1340,317.36218 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z"
+                style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+      <rect style=" fill:#3333ff;stroke:none;"  width="50" height="25" x="1290" y="419.36218"/>
+      <rect y="442.36218" x="1290" height="25" width="50"  style=" fill:#ababff;stroke:none;"/>
+      <rect y="366.36218" x="1290" height="25" width="50"  style=" fill:#8383ff;stroke:none;"/>
+      <rect style=" fill:#0b0bff;stroke:none;"  width="50" height="24.000002" x="1290" y="317.36218"/>
+      <rect style=" fill:#d3d3ff;stroke:none;"  width="50" height="25" x="1290" y="390.36218"/>
+      <rect y="341.36218" x="1290" height="25" width="50"  style=" fill:#5b5bff;stroke:none;"/>
+      <path  d="m 1340,419.36219 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" style=" fill:none;stroke:#000000;stroke-width:1;"></path>
+      <rect style=" fill:#9fe5d6;stroke:none;"  width="24" height="25.000002" x="1340" y="442.36218"/>
+      <rect style=" fill:#41cbae;stroke:none;"  width="24" height="23.000013" x="1340" y="419.36218"/>
+      <rect y="442.36218" x="1442" height="25" width="25"  style=" fill:#9fe5d6;stroke:none;"/>
+      <rect y="419.36218" x="1442" height="23.000011" width="25"  style=" fill:#41cbae;stroke:none;"/>
+      <rect style=" fill:#9fe5d6;stroke:none;"  width="25" height="25" x="1364" y="442.36218"/>
+      <rect style=" fill:#60d4bb;stroke:none;"  width="25" height="23.000011" x="1364" y="419.36218"/>
+      <rect y="442.36218" x="1389" height="25" width="25"  style=" fill:#9fe5d6;stroke:none;"/>
+      <rect y="419.36218" x="1389" height="23.000011" width="25"  style=" fill:#80dcc9;stroke:none;"/>
+      <rect style=" fill:#9fe5d6;stroke:none;"  width="23" height="25" x="1467" y="442.36218"/>
+      <rect style=" fill:#9fe5d6;stroke:none;"  width="23" height="23.000011" x="1467" y="419.36218"/>
+      <rect y="442.36218" x="1414" height="25" width="24"  style=" fill:#beeee3;stroke:none;"/>
+      <rect y="419.36218" x="1414" height="23.000011" width="24"  style=" fill:#beeee3;stroke:none;"/>
+      <rect y="366.36218" x="1340" height="25.000002" width="24"  style=" fill:#80dcc9;stroke:none;"/>
+      <rect style=" fill:#60d4bb;stroke:none;"  width="24" height="25.000002" x="1340" y="341.36218"/>
+      <rect style=" fill:#31b398;stroke:none;"  width="24" height="24.000004" x="1340" y="317.36218"/>
+      <rect style=" fill:#80dcc9;stroke:none;"  width="25" height="25" x="1442" y="366.36218"/>
+      <rect y="341.36218" x="1442" height="25" width="25"  style=" fill:#60d4bb;stroke:none;"/>
+      <rect y="317.36218" x="1442" height="24.000002" width="25"  style=" fill:#41cbae;stroke:none;"/>
+      <rect y="366.36218" x="1364" height="25" width="25"  style=" fill:#80dcc9;stroke:none;"/>
+      <rect style=" fill:#60d4bb;stroke:none;"  width="25" height="25" x="1364" y="341.36218"/>
+      <rect style=" fill:#60d4bb;stroke:none;"  width="25" height="24.000002" x="1364" y="317.36218"/>
+      <rect style=" fill:#80dcc9;stroke:none;"  width="25" height="25" x="1389" y="366.36218"/>
+      <rect y="341.36218" x="1389" height="25" width="25"  style=" fill:#80dcc9;stroke:none;"/>
+      <rect y="317.36218" x="1389" height="24.000002" width="25"  style=" fill:#80dcc9;stroke:none;"/>
+      <rect y="366.36218" x="1467" height="25" width="23"  style=" fill:#9fe5d6;stroke:none;"/>
+      <rect style=" fill:#9fe5d6;stroke:none;"  width="23" height="25" x="1467" y="341.36218"/>
+      <rect style=" fill:#9fe5d6;stroke:none;"  width="23" height="24.000002" x="1467" y="317.36218"/>
+      <rect style=" fill:#beeee3;stroke:none;"  width="24" height="25" x="1414" y="366.36218"/>
+      <rect y="341.36218" x="1414" height="25" width="24"  style=" fill:#beeee3;stroke:none;"/>
+      <rect y="317.36218" x="1414" height="24.000002" width="24"  style=" fill:#beeee3;stroke:none;"/>
+      <rect y="390.36218" x="1340" height="25.000002" width="24"  style=" fill:#beeee3;stroke:none;"/>
+      <rect style=" fill:#beeee3;stroke:none;"  width="25" height="25" x="1442" y="390.36218"/>
+      <rect y="390.36218" x="1364" height="25" width="25"  style=" fill:#beeee3;stroke:none;"/>
+      <rect style=" fill:#beeee3;stroke:none;"  width="25" height="25" x="1389" y="390.36218"/>
+      <rect y="390.36218" x="1467" height="25" width="23"  style=" fill:#beeee3;stroke:none;"/>
+      <rect style=" fill:#beeee3;stroke:none;"  width="24" height="25" x="1414" y="390.36218"/>
+      <path style=" fill:none;stroke:#000000;stroke-width:1;" d="m 1442,317.3622 48,0 0,98 -48,0 z m -4,98 -98,0 0,-98 98,0 z" id="path3238-0"></path>
+      <path  d="m 1442,419.3622 48,0 0,48 -48,0 z m -4,48 -98,0 0,-48 98,0 z" style=" fill:none;stroke:#000000;stroke-width:1;"></path>
+      <rect style=" fill:#ff6f6f;stroke:none;stroke-width:15;"  width="51" height="99" x="1240.5" y="316.86215"/>
+      <rect y="418.86215" x="1240.5" height="49.000008" width="51"  style=" fill:#ffbfbf;stroke:none;stroke-width:15;"/>
+      <path style=" fill:none;stroke:#000000;stroke-width:1;" d="m 1291,419.36218 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" id="path3273"></path>
+      <rect transform="matrix(0,-1,1,0,0,0)" style=" fill:#ff6f6f;stroke:none;stroke-width:15;"  width="51" height="99" x="-517.86218" y="1339.5"/>
+      <rect transform="matrix(0,-1,1,0,0,0)" y="1441.5" x="-517.86218" height="49.000008" width="51"  style=" fill:#ffbfbf;stroke:none;stroke-width:15;"/>
+      <path style=" fill:none;stroke:#000000;stroke-width:1;" d="m 1442,467.36217 48,0 0,50 -48,0 z m -4,50 -98,0 0,-50 98,0 z" id="path3290"></path>
+  </g><g id="result_e" class="example" transform="translate(0,0)"><image  xlink:href="assets/sequence/3.png" width="219" height="163" x="1261" y="532.36218"></image><path class="arrow" d="m 1175.6666,602.56837 29.3334,0 m -9.3334,-10 14.6667,16 -14.6667,18 m 9.3334,-12 -29.3334,0" id="path3138"></path></g></g>
+  </g>
+  </g>
+</svg>
+    <script>
+    function test() {
+        var strat1 = d3.select('#strat1_g').attr('transform','translate(640,0)');
+        var num1 = d3.select('#num1_g').attr('transform','translate(570,0)').attr('opacity',0);
+        var combined = d3.select('#combined_g').attr('transform','translate(480,0)').attr('opacity',0);
+        var matrix = d3.select('#matrix_g').attr('transform','translate(440,0)').attr('opacity',0);
+        var matcombined = d3.select('#matcombined_g').attr('transform','translate(220,0)').attr('opacity',0);
+        var continent = d3.select('#continent_g').attr('transform','translate(-099,160)').attr('opacity',0);
+        var result = d3.select('#result_g').attr('opacity',0);
+        //num1
+        //addFragment(function() {
+		strat1.attr('transform','translate(560,0)');
+		num1.attr('opacity',1);
+        //}, function() {
+        //    strat1.attr('transform','translate(700,0)');
+        //    num1.attr('opacity',0);
+        //});
+        //combined
+        addFragment(function() {
+            strat1.attr('opacity',1).transition().attr('transform','translate(480,0)');
+            num1.attr('opacity',1).transition().attr('transform','translate(480,0)');
+            combined.transition().delay(500).attr('opacity',1);
+        }, function() {
+            strat1.transition().attr('transform','translate(640,0)');
+            num1.transition().attr('transform','translate(640,0)');
+            combined.attr('opacity',0);
+        });
+        //matrix
+        addFragment(function() {
+            //strat1.attr('opacity',1).transition().attr('transform','translate(440,0)');
+            //num1.attr('opacity',1).transition().attr('transform','translate(440,0)');
+            //combined.attr('opacity',1).transition().attr('transform','translate(440,0)');
+            //matrix.transition().delay(500);
+
+            strat1.attr('opacity',1).transition().attr('transform','translate(220,0)');
+            num1.attr('opacity',1).transition().attr('transform','translate(220,0)');
+            combined.attr('opacity',1).transition().attr('transform','translate(220,0)');
+            matrix.attr('transform','translate(220,0)').transition().delay(500).attr('opacity',1);
+            matcombined.transition().delay(1000).attr('opacity',1);
+
+        }, function() {
+            strat1.transition().attr('transform','translate(440,0)');
+            num1.transition().attr('transform','translate(440,0)');
+            combined.transition().attr('transform','translate(440,0)');
+            matrix.transition().attr('transform','translate(440,0)');
+            matcombined.attr('opacity',0);
+
+            strat1.transition().attr('transform','translate(520,0)');
+            num1.transition().attr('transform','translate(530,0)');
+            combined.transition().attr('transform','translate(530,0)');
+            matrix.attr('opacity',0);
+        });
+        //continent
+        addFragment(function() {
+            d3.select('#combined_all').transition().attr('transform','translate(0,50)');
+            d3.selectAll('g.example').transition().attr('transform','translate(0,150)');
+            //strat1.attr('opacity',1).transition().attr('transform','translate(100,0)');
+            //num1.attr('opacity',1).transition().attr('transform','translate(100,0)');
+            //combined.attr('opacity',1).transition().attr('transform','translate(100,0)');
+            //matrix.attr('opacity',1).transition().attr('transform','translate(100,0)');
+            //matcombined.attr('opacity',1).transition().attr('transform','translate(100,0)');
+            continent.transition().delay(500).attr('opacity',1);
+
+            strat1.attr('opacity',1).transition().attr('transform','translate(0,0)');
+            num1.attr('opacity',1).transition().attr('transform','translate(0,0)');
+            combined.attr('opacity',1).transition().attr('transform','translate(0,0)');
+            matrix.attr('opacity',1).transition().attr('transform','translate(0,0)');
+            matcombined.attr('opacity',1).transition().attr('transform','translate(0,0)');
+            continent.attr('transform','translate(-199,160)'); //.attr('opacity',1).transition().delay(500);
+            result.transition().delay(1000).attr('opacity',1);
+
+        }, function() {
+            strat1.transition().attr('transform','translate(100,0)');
+            num1.transition().attr('transform','translate(100,0)');
+            combined.transition().attr('transform','translate(100,0)');
+            matrix.transition().attr('transform','translate(100,0)');
+            matcombined.transition().attr('transform','translate(100,0)');
+            continent.transition().attr('transform','translate(-099,160)');
+            result.attr('opacity',0);
+
+            strat1.transition().attr('transform','translate(280,0)');
+            num1.transition().attr('transform','translate(280,0)');
+            combined.transition().attr('transform','translate(280,0)');
+            matrix.transition().attr('transform','translate(280,0)');
+            matcombined.transition().attr('transform','translate(280,0)');
+            continent.attr('opacity',0);
+
+
+            d3.selectAll('g.example').attr('transform','translate(0,0)');
+            d3.select('#combined_all').attr('transform','translate(0,100)');
+        });
+    }
+    test()
+    </script>
+    <div class="fragment" style="position: absolute; top: 20%; left: 0; width: 100%; text-align: center; ">
+		<div class="fragment fade-out" style="width:100%">
+            <img src="assets/heterogeneous_heatmap.png" style="width: 85%; ">
+            <div width="85%" height="600" style="position: absolute; top: 0; margin: 0 auto;">
+                <div style="left: 850px;top: 480px;" class="annon">Patient</div>
+                <div style="left: 460px;top: 380px;" class="annon vertical">Gene</div>
+                <div style="left: 180px;top: 340px;font-size: 60%; white-space: nowrap;" class="annon"># mutations</div>
+                <div style="left: 850px;top: 80px;font-size: 60%; white-space: nowrap;" class="annon">age, gender, ...</div>
+            </div>
+            <p class="rev">[The Cancer Genome Atlas Research Network et al., 2014]</p>
+		</div>
+        <script>
+            onPreviousFragment('div', function() {
+                d3.select('#combined svg').style('opacity', 1);
+            }, function() {
+                d3.select('#combined svg').style('opacity', 0.1);
+            });
+        </script>
+    </div>
+    <script>
+        onPreviousFragment('div', function() {
+            d3.select('#combined svg').style('opacity', 0.1);
+        }, function() {
+            d3.select('#combined svg').style('opacity', 1);
+        });
+    </script>
+</section>
+
+<section id="relationships">
+    <h2 class="rel">Relationships</h2>
+
+    <div>
+        <div>
+            <span>None</span>
+            <div class="fragment" data-fragment-index="1">
+            <img class="fixed" src="assets/proximity/none_c.png">
+            <img class="fixed" src="assets/proximity/none_e.png">
+            <ul>
+                <li>&lt;nothing&gt;</li>
+            </ul>            
+            </div>
+        </div>
+        <div>
+            <span>Weak</span>
+            <div class="fragment" data-fragment-index="2">
+            <img class="fixed" src="assets/proximity/weak_c.png">
+            <img class="fixed" src="assets/proximity/weak_e.png">
+            <ul>
+                <li>shared item type</li>
+            </ul>            
+            </div>
+            <script>
+                onPreviousFragment("div",function() {
+                    d3.select('#medium_rel').transition().delay(500).style('opacity',1);
+                }, function() {
+                    d3.select('#medium_rel').style('opacity',0);
+                })
+            </script>
+        </div>
+        <div>
+            <span>Medium</span>
+            <div style="opacity: 0" id="medium_rel">
+            <img class="fixed" src="assets/proximity/medium_c.png">
+            <img class="fixed" src="assets/proximity/medium_e.png">
+            <ul>
+                <li>shared item type</li>
+                <li>shared partitioning</li>
+            </ul>
+            </div>
+        </div>
+        <div>
+            <span>Strong</span>
+            <div class="fragment" data-fragment-index="0">
+            <img class="fixed" src="assets/proximity/strong_c.png">
+            <img class="fixed" src="assets/proximity/strong_e.png">
+            <ul>
+                <li>shared item type</li>
+                <li>shared partitioning</li>
+                <li>shared sorting</li>
+            </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="rel-representation">
+    <h2>Relationships Representation</h2>
+
+    <table>
+        <tfoot>
+            <tr>
+                <th style="border: 0"></th>
+                <th style="border: 0"></th>
+                <th><span>item</span></th>
+                <th><span>group</span></th>
+                <th><span>block</span></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th colspan="3" style="padding-top: 20px"><strong>granularity</strong></th>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr>
+                <th rowspan="2" style="border:0; padding-right: 20px"><strong class="vertical" style="margin-top: 100px">direction</strong></th>
+                <th><span class="vertical" style="margin-top: 100px;">parallel</span></th>
+                <td style="position: relative">
+                    <img style="opacity: 0" class="rel_item fixed" src="assets/linktypes/item_par_c.png">
+                    <img style="display: none" class="rel_item2 fixed" src="assets/linktypes/item_par.png">
+                </td>
+                <td style="position: relative">
+                    <img style="opacity: 0" class="rel_group fixed" src="assets/linktypes/group_par_c.png">
+                    <img style="display: none" class="rel_group2 fixed" src="assets/linktypes/group_par.png">
+                </td>
+                <td style="position: relative">
+                    <img style="opacity: 0" class="rel_block fixed" src="assets/linktypes/block_par_c.png">
+                    <img style="display: none" class="rel_block2 fixed" src="assets/linktypes/block_par.png">
+                </td>
+            </tr>
+            <tr>
+                <th><span class="vertical" style="margin-top: 100px;">orthogonal</span></th>
+                <td>
+                    <img style="opacity: 0" class="rel_item fixed" src="assets/linktypes/item_orth_c.png">
+                    <img style="display: none" class="rel_item2 fixed" src="assets/linktypes/item_orth.png">
+                </td>
+                <td>
+                    <img style="opacity: 0" class="rel_group fixed" src="assets/linktypes/group_orth_c.png">
+                    <img style="display: none" class="rel_group2 fixed" src="assets/linktypes/group_orth.png">
+                </td>
+                <td>
+                    <img style="opacity: 0" class="rel_block fixed" src="assets/linktypes/block_orth_c.png">
+                    <img style="display: none" class="rel_block2 fixed" src="assets/linktypes/block_orth.png">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        var $relrep = d3.selectAll('#rel-representation table tbody tr');
+        addFragment(function() {
+            $relrep.selectAll('img.rel_item').transition().style('opacity',1);
+            $relrep.selectAll('img.rel_group').transition().delay(500).style('opacity',1);
+            $relrep.selectAll('img.rel_block').transition().delay(1000).style('opacity',1);
+        }, function() {
+            $relrep.selectAll('img.rel_item, img.rel_group, img.rel_block').style('opacity',0);
+        });
+        addFragment(function() {
+            $relrep.selectAll('img.rel_item, img.rel_group, img.rel_block').transition().duration(500).style('opacity',0).each('end', function() {
+                d3.select(this).style('display','none');
+            });
+            $relrep.selectAll('img.rel_item2, img.rel_group2, img.rel_block2').transition().delay(500).style('display',null);
+        }, function() {
+            $relrep.selectAll('img.rel_item, img.rel_group, img.rel_block').style('opacity',1).style('display',null);
+            $relrep.selectAll('img.rel_item2, img.rel_group2, img.rel_block2').style('display','none');
+        });
+    </script>
+</section>
+
+<section id="examples">
+    <svg width="55%" height="1500" style="position: absolute;left: 20px;top: 0em;">
+        <defs>
+        <g id="numblock">
+         <g transform="translate(-411.04433,-628.39633)translate(-0.57142861,151.52679)">
+          <path d="m 419.11576,627.36954 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z"  style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+          <path d="m 469.11576,627.36954 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z"         style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+          <g transform="translate(419.61575,160.02094)">
+            <rect width="50" height="25" y="416.8486" style="color:#000000;fill:#ababff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="441.8486" style="color:#000000;fill:#d3d3ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="391.8486" style="color:#000000;fill:#8383ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="366.8486" style="color:#000000;fill:#5b5bff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="341.8486" style="color:#000000;fill:#3333ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="317.84863" style="color:#000000;fill:#0b0bff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="416.8486" style="color:#000000;fill:#ababff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="441.8486" style="color:#000000;fill:#d3d3ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="366.8486" style="color:#000000;fill:#5b5bff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="391.8486" style="color:#000000;fill:#8383ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="317.84863" style="color:#000000;fill:#0b0bff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="441.8486" style="color:#000000;fill:#d3d3ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="25" y="366.8486" style="color:#000000;fill:#5b5bff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;" />
+            <rect width="50" height="150" y="317.34863" style="color:#000000;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;" />
+          </g>
+         </g>
+        </g>
+        <g id="item_par_connector">
+        <g transform="scale(0.8,1)translate(-186.81696,-273.99765)">
+            <g transform="translate(217.45981,-94.293091)" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;">
+              <path d="m -21.142857,378.29075 149.999997,20" />
+              <path d="m 128.85714,408.29075 -149.999997,0" />
+              <path d="m -21.142857,428.29075 149.999997,50" />
+              <path d="m -21.142857,508.29075 149.999997,-80" />
+              <path d="m -21.142857,488.29075 149.999997,-40" />
+              <path d="m -21.142857,458.29075 149.999997,40" />
+            </g>
+            <path
+               d="m 196.81696,424.49766 0,-150 -9.5,-10e-6 6,5 -6,5 6,4.99999 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+            <path
+               d="m 345.81695,424.49766 0,-150 3.6667,0 5.8333,5 -5.8333,5 5.8333,4.99999 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5.00002 -5.8333,5 5.8333,5 -5.8333,4.99998 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+        </g>
+        </g>
+        <g id="item_orth_connector">
+    <g transform="translate(-536.97619,-619.68361)">
+      <path d="m 355,252.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z" transform="translate(221.97619,392.82143)" style="opacity:0.8;color:#000000;fill:#e5e5e5;fill-opacity:0.9372549;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;" />
+      <path d="m 355,252.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z" transform="translate(281.97619,418.32143)" style="opacity:0.8;color:#000000;fill:#e5e5e5;fill-opacity:0.9372549;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;" />
+      <path d="m 355,252.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z" transform="translate(227.47619,472.82143)" style="opacity:0.8;color:#000000;fill:#e5e5e5;fill-opacity:0.9372549;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;" />
+      <path d="m 355,252.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z" transform="translate(307.47619,482.82143)" style="opacity:0.8;color:#000000;fill:#e5e5e5;fill-opacity:0.9372549;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;" />
+      <path d="m 355,252.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z" transform="translate(321.97619,438.32143)" style="opacity:0.8;color:#000000;fill:#e5e5e5;fill-opacity:0.9372549;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;" />
+      <path d="m 546.97619,770.18362 0,-150 -9.5,-10e-6 6,5 -6,5 6,4.99999 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m 548.40476,771.21933 150,0 0,3.6667 -5,5.8333 -5,-5.8333 -4.99999,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5,5.8333 -5,-5.8333 -5.00002,5.8333 -5,-5.8333 -5,5.8333 -4.99998,-5.8333 z" style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+  </g>
+  <g id="parblock">
+<g transform="translate(-590.35714,-579.71931)" >
+    <path d="m 597.85714,730.21932 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+    <path d="m 647.85714,730.21932 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+    <g transform="translate(758.35714,257.35713)" >
+      <rect width="51" height="99" x="-161" y="322.36218" style="color:#000000;fill:#ff6f6f;stroke:none;stroke-width:15;" />
+      <rect width="51" height="49.000008" x="-161" y="424.36218" style="color:#000000;fill:#ffbfbf;stroke:none;stroke-width:15;" />
+      <path d="m -110.5,424.8622 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z" style="color:#000000;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;;" />
+    </g>
+  </g>
+</g>
+<g id="group_parconnector" >
+    <g transform="scale(0.8,1)translate(-384.57143,-468.29074)translate(574.41593,877.64926)">
+      <path d="m -180.3445,-259.35852 150,-51 0,-48 -150,52 z" style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m -179.8445,-408.85852 150,0 0,51 -150,0 z" style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m -180.3445,-358.35852 150,52 0,47 -150,-51 z" style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m -179.8445,-258.85851 0,-150 -9.5,-10e-6 6,5 -6,5 6,4.99999 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m -30.8445,-258.85852 0,-150 3.6667,0 5.8333,5 -5.8333,5 5.8333,4.99999 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5.00002 -5.8333,5 5.8333,5 -5.8333,4.99998 z" style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;" />
+    </g>
+  </g>
+  <g id="matrixblock">
+    <g transform="translate(-332.5119,-465.1479)translate(21.369041,-319.92857)">
+      <path d="m 461.4762,941.57647 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m 311.64286,941.57647 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path d="m 311.64286,791.57647 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <rect width="24" height="25.000002" x="311.64285" y="916.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="24" height="23.000013" x="311.64285" y="893.57648" style="color:#000000;fill:#41cbae;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="335.64285" y="916.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="23.000011" x="335.64285" y="893.57648" style="color:#000000;fill:#41cbae;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="360.64285" y="916.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="23.000011" x="360.64285" y="893.57648" style="color:#000000;fill:#60d4bb;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="385.64285" y="916.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="23.000011" x="385.64285" y="893.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="410.64285" y="916.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="23.000011" x="410.64285" y="893.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="435.64285" y="916.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="23.000011" x="435.64285" y="893.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="24" height="25.000002" x="311.64285" y="840.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="24" height="25.000002" x="311.64285" y="815.57648" style="color:#000000;fill:#60d4bb;stroke:none;stroke-width:3;" />
+      <rect width="24" height="24.000004" x="311.64285" y="791.57648" style="color:#000000;fill:#31b398;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="335.64285" y="840.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="335.64285" y="815.57648" style="color:#000000;fill:#60d4bb;stroke:none;stroke-width:3;" />
+      <rect width="25" height="24.000002" x="335.64285" y="791.57648" style="color:#000000;fill:#41cbae;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="360.64285" y="840.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="360.64285" y="815.57648" style="color:#000000;fill:#60d4bb;stroke:none;stroke-width:3;" />
+      <rect width="25" height="24.000002" x="360.64285" y="791.57648" style="color:#000000;fill:#60d4bb;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="385.64285" y="840.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="385.64285" y="815.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="25" height="24.000002" x="385.64285" y="791.57648" style="color:#000000;fill:#80dcc9;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="410.64285" y="840.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="410.64285" y="815.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="24.000002" x="410.64285" y="791.57648" style="color:#000000;fill:#9fe5d6;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="435.64285" y="840.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="435.64285" y="815.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="24.000002" x="435.64285" y="791.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="24" height="25.000002" x="311.64285" y="864.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="335.64285" y="864.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="360.64285" y="864.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="385.64285" y="864.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="410.64285" y="864.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <rect width="25" height="25" x="435.64285" y="864.57648" style="color:#000000;fill:#beeee3;stroke:none;stroke-width:3;" />
+      <path d="m 461.14286,893.57648 0,48 -149.5,0 0,-48 z m -149.5,-4 0,-98.00001 149.5,0 0,98.00001 z" style="color:#000000;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;" />
+    </g>
+  </g>
+  <g id="numparblock">
+<g transform="translate(-442.5119,-451.14789)" >
+    <path d="m 492.84524,601.64789 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect width="50" height="25" x="443.01184" y="553.64789" style="color:#000000;fill:#3333ff; stroke:none;stroke-width:3; " />
+    <rect width="50" height="25" x="443.01184" y="576.64789"  style="color:#000000;fill:#ababff; stroke:none;stroke-width:3; " />
+    <rect width="50" height="25" x="443.01184" y="500.64789"  style="color:#000000;fill:#8383ff; stroke:none;stroke-width:3; " />
+    <rect width="50" height="24.000002" x="443.01184" y="451.64789"  style="color:#000000;fill:#0b0bff; stroke:none;stroke-width:3; " />
+    <rect width="50" height="25" x="443.01184" y="524.64789"  style="color:#000000;fill:#d3d3ff; stroke:none;stroke-width:3; " />
+    <rect width="50" height="25" x="443.01184" y="475.64789"  style="color:#000000;fill:#5b5bff; stroke:none;stroke-width:3; " />
+    <path d="m 493.0119,553.64791 0,48 -50,0 0,-48 z m -50,-4 0,-98.00001 50,0 0,98.00001 z"  style="color:#000000;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1; " />
+  </g>
+</g>
+<g id="matrixrblock">
+    <g transform="translate(-326.34524,-465.1479)translate(21.369041,-319.92857)" >
+      <path d="m 312.4762,941.57647 0,-150 -1.16666,0 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5.00002 5.83334,5 -5.83334,5 5.83334,4.99998 z"  style="fill:#e6e6e6; stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter; " />
+      <path d="m 311.64286,941.57647 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 z"  style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter; " />
+      <path d="m 311.64286,791.57647 0,0 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,-6 10,0 0,6 10,0 0,0 z"  style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter; " />
+      <rect width="24" height="25.000002" x="311.64285" y="916.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="24" height="23.000013" x="311.64285" y="893.57648"  style="color:#000000;fill:#41cbae; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="335.64285" y="916.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="23.000011" x="335.64285" y="893.57648"  style="color:#000000;fill:#41cbae; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="360.64285" y="916.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="23.000011" x="360.64285" y="893.57648"  style="color:#000000;fill:#60d4bb; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="385.64285" y="916.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="23.000011" x="385.64285" y="893.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="410.64285" y="916.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="23.000011" x="410.64285" y="893.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="435.64285" y="916.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="23.000011" x="435.64285" y="893.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="24" height="25.000002" x="311.64285" y="840.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="24" height="25.000002" x="311.64285" y="815.57648"  style="color:#000000;fill:#60d4bb; stroke:none;stroke-width:3; " />
+      <rect width="24" height="24.000004" x="311.64285" y="791.57648"  style="color:#000000;fill:#31b398; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="335.64285" y="840.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="335.64285" y="815.57648"  style="color:#000000;fill:#60d4bb; stroke:none;stroke-width:3; " />
+      <rect width="25" height="24.000002" x="335.64285" y="791.57648"  style="color:#000000;fill:#41cbae; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="360.64285" y="840.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="360.64285" y="815.57648"  style="color:#000000;fill:#60d4bb; stroke:none;stroke-width:3; " />
+      <rect width="25" height="24.000002" x="360.64285" y="791.57648"  style="color:#000000;fill:#60d4bb; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="385.64285" y="840.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="385.64285" y="815.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="25" height="24.000002" x="385.64285" y="791.57648"  style="color:#000000;fill:#80dcc9; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="410.64285" y="840.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="410.64285" y="815.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="24.000002" x="410.64285" y="791.57648"  style="color:#000000;fill:#9fe5d6; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="435.64285" y="840.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="435.64285" y="815.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="24.000002" x="435.64285" y="791.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="24" height="25.000002" x="311.64285" y="864.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="335.64285" y="864.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="360.64285" y="864.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="385.64285" y="864.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="410.64285" y="864.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <rect width="25" height="25" x="435.64285" y="864.57648"  style="color:#000000;fill:#beeee3; stroke:none;stroke-width:3; " />
+      <path d="m 461.14286,893.57648 0,48 -149.5,0 0,-48 z m -149.5,-4 0,-98.00001 149.5,0 0,98.00001 z"  style="color:#000000;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;" />
+    </g>
+  </g>
+        </defs>
+        <g transform="translate(200,100)scale(1.5,1.5)translate(0,10)">
+        <g transform="translate(0,100)" id="concept">
+        <g id="items" transform="translate(0,0)">
+            <g transform="translate(57,0)" id="item_p1" style="opacity:1">
+              <use xlink:href="#item_par_connector" />
+            </g>
+            <g transform="translate(0,0)" id="numblock1" style="opacity:1">
+              <use xlink:href="#numblock" />
+            </g>
+            <g transform="translate(245,0)" id="item_p2" style="opacity:1">
+              <use xlink:href="#item_par_connector" />
+            </g>
+            <g transform="translate(57,0)" id="item_o1" style="opacity:0">
+              <use xlink:href="#item_orth_connector" />
+            </g>
+            <g transform="translate(57,-160)" id="item_o_splom2" style="opacity:0">
+              <use xlink:href="#item_orth_connector" />
+            </g>
+            <g transform="translate(220,-160)" id="item_o_splom3" style="opacity:0">
+              <use xlink:href="#item_orth_connector" />
+            </g>
+            <g transform="translate(220,0)" id="item_o_splom4" style="opacity:0">
+              <use xlink:href="#item_orth_connector" />
+            </g>
+            <g transform="translate(186,0)rotate(0)" id="numblock2" style="opacity:1">
+              <use xlink:href="#numblock" />
+            </g>
+            <g transform="translate(374,0)" id="numblock3" style="opacity:1">
+              <use xlink:href="#numblock" />
+            </g>
+            <g transform="translate(382,154)rotate(90)" id="numblock_splom3" style="opacity:0">
+              <use xlink:href="#numblock" />
+            </g>
+        </g>
+        <g id="pars" opacity="0">   
+            <g transform="translate(-316,0)" id="group_p1" style="opacity:1">
+              <use xlink:href="#group_parconnector" />
+            </g>
+            <g transform="translate(-128,0)" id="group_p2" style="opacity:1">
+              <use xlink:href="#group_parconnector" />
+            </g>
+            <g transform="translate(-375,0)" id="parblock1" style="opacity:1">
+              <use xlink:href="#parblock" />
+            </g>
+            <g transform="translate(-187,0)" id="parblock2" style="opacity:1">
+              <use xlink:href="#parblock" />
+            </g>
+            <g transform="translate(0,0)" id="parblock3" style="opacity:1">
+              <use xlink:href="#parblock" />
+            </g>
+            <g transform="translate(-525,-6)" id="matrixblock1" style="opacity:0">
+              <use xlink:href="#matrixrblock" />
+            </g>
+            <g transform="translate(-132,-6)" id="matrixblock2" style="opacity:0">
+              <use xlink:href="#matrixblock" />
+            </g>
+            <g transform="translate(-132,0)" id="numparblock1" style="opacity:0">
+              <use xlink:href="#numparblock" />
+            </g>
+        </g>
+        </g>
+        </g>
+    </svg>
+    <img class="fixed" width="38%" height="auto" id="usecaseexample" src="assets/number_one_c.png" style="opacity: 0; position: absolute; max-height: none; left: 3em; top: 2em">
+    <img class="fixed" width="38%" height="auto" id="usecaseexample2" src="assets/tcga_c.png" style="opacity: 0; position: absolute; max-height: none; left: 3em; top: 5em">
+    <div class="sidebar">
+        <div id="parco_detail" style="opacity: 1; left: 50%; width: 50%">
+            <div>Parallel Coordinates</div>
+            <img class="fixed" src="assets/parallel_coordinates_e.png">
+            <p class="rev">[Inselberg, 1985]</p>
+        </div>
+        <div id="scatter_detail" style="opacity: 0; left: 50%; width: 50%">
+            <div>Scatterplot</div>
+            <img class="fixed" src="assets/examples/scatterplot_e.png" style="width: 60%">
+        </div>
+        <div id="splom_detail" style="opacity: 0; left: 50%; width: 50%">
+            <div>Scatterplot Matrix (SPLOM)</div>
+            <img class="fixed" src="assets/examples/scatterplot_matrix_e.png" style="width: 70%">
+        </div>
+        <div id="flina_detail" style="opacity: 0; left: 50%; width: 50%">
+            <div>Flexible Linked Axis</div>
+            <img class="fixed" src="assets/examples/scatter_coordinates_e.png">
+            <p class="rev">[Claessen and van Wijk, 2011]</p>
+        </div>
+        <div id="connected_detail" style="opacity: 0; top: 5em; left: 50%; width: 50%">
+            <div>Connected Charts</div>
+            <img class="fixed" src="assets/examples/connectedcharts_e.png" style="width: 90%">
+            <p class="rev">[Viau and McGuffin, 2012]</p>
+        </div>
+        <div id="parallel_detail" style="opacity: 0; top: 4em; left: 50%; width: 50%">
+            <div>Parallel Sets</div>
+            <img class="fixed" src="assets/examples/parallel_sets_e.png" style="width: 100%">
+            <p class="rev">[Kosara etal, 2006]</p>
+        </div>
+        <div id="match_detail" style="opacity: 0; top: 4em; left: 50%; width: 50%">
+            <div>Matchmaker</div>
+            <img class="fixed" src="assets/examples/matchmaker_e.png" style="width: 100%">
+            <p class="rev">[Lex et al., 2010]</p>
+        </div>
+        <div id="stratomex_detail" style="opacity: 0; left: 50%; width: 50%">
+            <div>StratomeX</div>
+            <img class="fixed" src="assets/examples/stratomex_e_2.png" style="width: 90%">
+            <p class="rev">[Lex et al., 2012]</p>
+        </div>
+        <div id="usecase_detail" style="opacity: 0; left: 45%; width: 55%">
+            <div>Music Use Case</div>
+            <img src="assets/number_one.png" style="width: 100%">
+        </div>
+        <div id="usecase_detail2" style="opacity: 0; left: 50%; width: 50%">
+            <div>Cancer Genomics Use Case</div>
+            <img src="assets/tcga.png" style="width: 100%">
+        </div>
+    </div>
+    <script>
+        function examples() {
+            var $parco_detail = d3.select('#parco_detail');
+            var $scatter_detail = d3.select('#scatter_detail');
+            var $splom_detail = d3.select('#splom_detail');
+            var $flina_detail = d3.select('#flina_detail');
+            var $connected_detail = d3.select('#connected_detail');
+            var $parallel_detail = d3.select('#parallel_detail');
+            var $match_detail = d3.select('#match_detail');
+            var $stratomex_detail = d3.select('#stratomex_detail');
+            var $usecase_detail = d3.select('#usecase_detail');
+            var $usecase_detail2 = d3.select('#usecase_detail2');
+            function RaddFragment(f) {
+                f();
+            }
+            //scatter plot
+            addFragment(function() {
+                var bak = ['#numblock3','#item_p2','#numblock2','#concept'].map(function(r) { return d3.select(r).attr('transform');});
+                $parco_detail.interrupt().transition().style('top',"-1000px");
+                d3.selectAll('#numblock3, #item_p2').interrupt().transition().delay(300)
+                    .style('opacity',0)
+                    .attr('transform','translate(1200,0)');
+                d3.select('#numblock2').interrupt().transition().delay(1200)
+                    .attr('transform','translate(219,154)rotate(90)');
+                d3.select('#item_p1').interrupt().transition().delay(1900)
+                    .style('opacity',0);
+                d3.select('#item_o1').interrupt().transition().delay(2400)
+                    .style('opacity',1);
+
+                $scatter_detail.transition().delay(3000).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $parco_detail.style('top',null);
+                $scatter_detail.style('opacity',0);
+
+                d3.select('#numblock3').interrupt().style('opacity',1).attr('transform', bak[0]);
+                d3.select('#item_p2').interrupt().style('opacity',1).attr('transform', bak[1]);
+                d3.select('#numblock2').interrupt().attr('transform', bak[2]);
+                d3.select('#item_p1').interrupt().style('opacity',1);
+                d3.select('#item_o1').interrupt().style('opacity',0);
+
+                d3.select('#concept').interrupt().attr('transform',bak[3]);
+            });
+            //splom
+            addFragment(function() {
+                var bak = ['#numblock3'].map(function(r) { return d3.select(r).attr('transform');});
+                $scatter_detail.interrupt().transition().style('top',"-1000px");
+
+                d3.select('#concept').interrupt().transition().delay(300).attr('transform','translate(50,250)');
+
+                d3.select('#numblock3').interrupt().attr('transform','translate(0,-160)');
+                d3.selectAll('#numblock3, #numblock_splom3').interrupt().transition().delay(1300)
+                    .style('opacity',1);
+                d3.selectAll('#item_o_splom4, #item_o_splom3, #item_o_splom2').interrupt().transition().delay(2000)
+                    .style('opacity',1);
+
+                $splom_detail.interrupt().transition().delay(2600).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $scatter_detail.interrupt().style('top',null);
+                $splom_detail.interrupt().style('opacity',0);
+                d3.select('#numblock3').interrupt().attr('transform',bak[0]);
+                d3.selectAll('#numblock3, #numblock_splom3').interrupt().style('opacity',0);
+                d3.selectAll('#item_o_splom4, #item_o_splom3, #item_o_splom2').interrupt().style('opacity',0);
+            });
+
+            //flina
+            addFragment(function() {
+                var bak = ['#concept', '#numblock_splom3', '#numblock3', '#item_p2', '#item_p1'].map(function(r) { return d3.select(r).attr('transform');});
+                $splom_detail.interrupt().transition().style('top',"-1000px");
+                d3.selectAll('#item_o_splom4, #item_o_splom3, #item_o_splom2').interrupt().transition().delay(300)
+                    .style('opacity',0);
+                d3.select('#concept').interrupt().transition().delay(300).attr('transform','translate(200,100)');
+                d3.select('#numblock_splom3').interrupt().transition().delay(1000).attr('transform','translate(219,341)rotate(90)')
+                d3.select('#numblock3').interrupt().transition().delay(1000).attr('transform','translate(-187,0)')
+                d3.select('#item_p2').interrupt().attr('transform','translate(-128,0)').transition().delay(1500)
+                    .style('opacity',1);
+                d3.select('#item_p1').interrupt().attr('transform','translate(219,212)rotate(90)').transition().delay(1500)
+                    .style('opacity',1);
+                
+                $flina_detail.transition().delay(2100).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $splom_detail.interrupt().style('top',null);
+                $flina_detail.interrupt().style('opacity',0);
+                d3.selectAll('#item_o_splom4, #item_o_splom3, #item_o_splom2').interrupt().style('opacity',1);
+                d3.select('#concept').interrupt().attr('transform',bak[0]);
+                d3.select('#numblock_splom3').interrupt().attr('transform',bak[1]);
+                d3.select('#numblock3').interrupt().attr('transform',bak[2]);
+                d3.select('#item_p2').interrupt().attr('transform',bak[3]).style('opacity',0);
+                d3.select('#item_p1').interrupt().attr('transform',bak[4]).style('opacity',0);
+            });
+
+            //connected charts
+            addFragment(function() {
+                var bak = ['#item_p2', '#concept', '#numblock_splom3', '#item_p1'].map(function(r) { return d3.select(r).attr('transform');});
+                $flina_detail.interrupt().transition().style('top',"-1000px");
+                d3.select('#item_p2').interrupt().attr('transform','translate(-128,0)').style('opacity',1);
+                d3.selectAll('#item_o_splom4, #item_o_splom3, #item_o_splom2').interrupt().transition().delay(300)
+                    .style('opacity',0);
+                d3.select('#concept').interrupt().transition().delay(300).attr('transform','translate(280,150)');
+                d3.select('#numblock_splom3').interrupt().transition().delay(1000).attr('transform','translate(-375,0)rotate(0)');
+                d3.select('#item_p1').interrupt().transition().delay(1000).attr('transform','translate(-316,0)rotate(0)');
+                
+                $connected_detail.interrupt().transition().delay(1600).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $flina_detail.interrupt().style('top',null);
+                $connected_detail.interrupt().style('opacity',0);
+                d3.select('#item_p2').interrupt().attr('transform',bak[0]).style('opacity',0);
+                d3.selectAll('#item_o_splom4, #item_o_splom3, #item_o_splom2').interrupt().style('opacity',1);
+                d3.select('#concept').interrupt().attr('transform',bak[1]);
+                d3.select('#numblock_splom3').interrupt().attr('transform',bak[2]);
+                d3.select('#item_p1').interrupt().attr('transform',bak[3]);
+            });  
+
+            //parallel coordinates 2
+            addFragment(function() {
+                $connected_detail.interrupt().transition().style('top',"-1000px");
+                d3.selectAll('#item_o1, #numblock2').interrupt().transition().delay(300)
+                    .style('opacity',0);
+            }, function() {
+                $connected_detail.interrupt().style('top',"5em");
+                d3.selectAll('#item_o1, #numblock2').interrupt().style('opacity',1);
+            });
+
+            addFragment(function() {
+                var bak = ['#items'].map(function(r) { return d3.select(r).attr('transform');});
+                d3.select('#items').interrupt().transition().delay(300).style('opacity',0);
+                d3.select('#pars').interrupt().transition().style('opacity',1);
+                
+                $parallel_detail.interrupt().transition().delay(1500).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $parallel_detail.interrupt().style('opacity',0);
+                d3.select('#items').interrupt().attr('transform',bak[0]).style('opacity',1);
+                d3.select('#pars').interrupt().style('opacity',0);
+            }); 
+
+            //match maker
+            addFragment(function() {
+                var bak = ['#parblock3', '#group_p2', '#concept'].map(function(r) { return d3.select(r).attr('transform');});
+                $parallel_detail.interrupt().transition().style('top',"-100em");
+                d3.selectAll('#parblock3, #group_p2').interrupt().transition().delay(300)
+                    .attr('transform','translate(1000,0)').style('opacity',0);
+                d3.select('#concept').interrupt().transition().delay(1000).attr('transform','translate(425,200)');
+                d3.selectAll('#matrixblock1, #matrixblock2').interrupt().transition().delay(1500).style('opacity',1);
+                
+                //d3.select('#concept').transition().delay(2000).attr('transform','translate(425,200)');
+                $match_detail.interrupt().transition().delay(2000).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $parallel_detail.interrupt().style('top','4em');
+                $match_detail.interrupt().style('opacity',0);
+                d3.select('#parblock3').interrupt().attr('transform',bak[0]).style('opacity',1);
+                d3.select('#group_p2').interrupt().attr('transform',bak[1]).style('opacity',1);
+                d3.selectAll('#matrixblock1, #matrixblock2').interrupt().style('opacity',0);
+                d3.select('#concept').interrupt().attr('transform',bak[2]);
+            });     
+
+            //stratomex
+            addFragment(function() {
+                var bak = ['#matrixblock2'].map(function(r) { return d3.select(r).attr('transform');});
+                $match_detail.interrupt().transition().style('top',"-1000px");
+                d3.select('#matrixblock2').interrupt().transition().delay(300).attr('transform','translate(1000,0)').style('opacity',0);
+
+                d3.select('#numparblock1').interrupt().transition().delay(1000).style('opacity',1);
+                
+                $stratomex_detail.interrupt().transition().delay(1600).style('opacity',1);
+                return bak;
+            }, function(_, bak) {
+                $match_detail.interrupt().style('top',null);
+                $stratomex_detail.interrupt().style('opacity',0);
+                d3.select('#matrixblock2').interrupt().attr('transform',bak[0]).style('opacity',1);
+                d3.select('#numparblock1').interrupt().style('opacity',0);
+            });    
+
+            //usecase
+            addFragment(function() {
+                $stratomex_detail.interrupt().transition().style('top',"-1000px");
+                d3.select('#pars').interrupt().transition().delay(300).style('opacity',0);
+
+                d3.select('#usecaseexample').interrupt().transition().delay(300).style('opacity',1);
+                
+                $usecase_detail.interrupt().transition().delay(800).style('opacity',1);
+            }, function() {
+                d3.select('#usecaseexample').interrupt().style('opacity',0);
+                d3.select('#pars').interrupt().style('opacity',1);
+                $stratomex_detail.interrupt().style('top',null);
+                $usecase_detail.interrupt().style('opacity',0);
+            });
+
+            //usecaseb
+            addFragment(function() {
+                $usecase_detail.interrupt().transition().style('top',"-1000px");
+                d3.select('#usecaseexample').interrupt().transition().delay(300).style('opacity',0);
+
+                d3.select('#usecaseexample2').interrupt().transition().delay(300).style('opacity',1);
+
+                $usecase_detail2.interrupt().transition().delay(800).style('opacity',1);
+            }, function() {
+                d3.select('#usecaseexample').interrupt().style('opacity',1);
+                d3.select('#usecaseexample2').interrupt().style('opacity',0);
+                $usecase_detail.interrupt().style('top',null);
+                $usecase_detail2.interrupt().style('opacity',0);
+            });
+        }
+        examples();
+    </script>
+</section>
+
+<section id="implementation" data-state="forkme">
+    <p style="position: relative; padding-top: 130px; text-align: center;">
+        <img src="assets/logos/caleydo_text_right.svg" class="fixed">
+  <a style="position: absolute; top: 240px; font-size: 80%; left: 1000px;" href="http://caleydo.org">http://caleydo.org</a>
+    </p>
+
+    <p style="padding-left: 100px; margin-top: 100px;"><strong>Open Source</strong> (BSD 3)</p>
+    <p style="padding-left: 100px; margin-top: 20px; line-height: 170%;">
+        <span>Source code:</span><br>
+        <span style="margin-left: 100px;"><i class="fa fa-github"></i>&nbsp;<a href="https://github.com/Caleydo/org.caleydo.view.domino">https://github.com/caleydo</a></span><br>
+        <span>Demos, videos, and more:</span><br>
+        <span style="margin-left: 100px;"><i class="fa fa-external-link"></i>&nbsp;<a href="http://domino.caleydo.org">http://domino.caleydo.org</a></span>
+    </p>
+    <img src="assets/overview.png" class="fixed" style="position: absolute; height: auto; top: 9em; width: 45%; right: 2em;">
+</section>
+
+<section id="placeholder" data-state="hidefooter">
+    <h2>Placeholder + Live Previews</h2>
+
+    <video style="margin-top: -20px" src="assets/videos/preview.ogv" class="stretch" data-autoplay="true" controls="controls"></video>
+</section>
+
+<section id="selection" data-state="hidefooter">
+    <h2>Selection and Highlighting</h2>
+
+    <video style="margin-top: -20px" src="assets/videos/selection.ogv" data-autoplay="true" class="stretch" controls="controls"></video>
+</section>
+
+<section id="manipulation" data-state="hidefooter">
+    <h2>Subset Manipulation</h2>
+
+    <video style="margin-top: -20px" src="assets/videos/extract.ogv" data-autoplay="true" class="stretch" controls="controls"></video>
+</section>
+
+<section id="summary">
+    <h2>Summary and Future Work</h2>
+
+    <p style="line-height: 150%; font-size: 140%; padding-left: 100px;">
+        <strong>Domino</strong> is general visualization technique based on <strong>blocks</strong> and <strong>relationships</strong>
+        for <strong class="higha">extracting</strong>, <strong class="highb">comparing</strong> and <strong class="highc">manipulating</strong> subsets.
+    </p>
+
+    <div style="margin-top: 160px; padding-left: 100px;" class="left">
+    <h3 class="high">Future Work</h3>
+    <ul>
+        <li>Guidance</li>
+        <li>Grammar</li>
+    </ul>
+    </div>
+
+    <img src="assets/number_one.png" style="position: absolute; right: 2em; top: 10em; width:auto; height: 9em;">
+</section>
+
+<section id="guidance">
+    <h2>Guidance</h2>
+    <img src="assets/guidance/placeholders.png" width="80%" style="margin-top: 40px">
+    <div style="font-size: 500%;" class="high fragment">
+        <div style="position: absolute; left: 370px; top: 400px;">?</div>
+        <div style="position: absolute; left: 560px; top: 400px;">?</div>
+        <div style="position: absolute; left: 890px; top: 400px">?</div>
+        <div style="position: absolute; left: 230px; top: 400px">?</div>
+        <div style="position: absolute; left: 700px; top: 400px;">?</div>
+        <div style="position: absolute; left: 1000px; top: 400px;">?</div>
+        <div style="position: absolute; left: 1220px; top: 400px">?</div>
+        <div style="position: absolute; left: 1330px; top: 400px">?</div>
+        <div style="position: absolute; left: 1640px; top: 400px">?</div>
+    </div>
+</section>
+
+<section id="guidance2">
+    <img class="fixed" src="assets/guidance/stratomex.png" width="58%">
+    <p class="rev">[Streit et al., 2014]</p>
+</section>
+
+<section id="grammar">
+    <h2>Grammar</h2>
+    <div style="height: 1000px; width: 1900px"></div>
+    <img class="fixed" src="assets/examples/connectedcharts_c.svg" style="position: absolute; left: 560px; top: 440px;">
+    <img class="fixed" src="assets/examples/matchmaker_c.svg" style="position: absolute; left: 20px; top: 170px;">
+    <img class="fixed" src="assets/examples/parallel_sets_c.svg" style="position: absolute; left: 930px; top: 120px;">
+    <img class="fixed" src="assets/examples/scatter_coordinates_c.svg" style="position: absolute; left: 1530px; top: 80px;">
+    <img class="fixed" src="assets/examples/scatterplot_c.svg" style="position: absolute; left: 680px; top: 150px;">
+    <img class="fixed" src="assets/examples/scatterplot_matrix_c.svg" style="position: absolute; left: 1510px; top: 580px;">
+    <img class="fixed" src="assets/examples/stratomex_c.svg" style="position: absolute; left: 690px; top: 780px;">
+    <img class="fixed" src="assets/number_one_c.png" style="position: absolute; left: 1100px; top: 310px;" width="400px">
+    <img class="fixed" src="assets/tcga_c.png" style="position: absolute; left: 0px; top: 580px;" width="700px">
+</section>
+    
+<section id="grammar2">
+    <h2>Domino Grammar</h2>
+    <svg width="95%" height="1000">
+        <g transform="translate(0,0)">
+            <g transform="translate(0,-100)scale(1.92,1.92)translate(503.31963,-208.01123)">
+                <g transform="translate(0,-4.3768532)" id="g3188">
+                    <path d="m -433.22525,382.70845 150,20" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -283.22525,412.70845 -150,0" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -433.22525,432.70845 150,50" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -433.22525,512.70845 150,-80" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -433.22525,492.70845 150,-40" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -433.22525,462.70845 150,40" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -283.72525,523.20845 0,-150 3.6667,0 5.8333,5 -5.8333,5 5.8333,4.99999 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5.00002 -5.8333,5 5.8333,5 -5.8333,4.99998 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -432.72525,523.20845 0,-150 -9.5,-1e-5 6,5 -6,5 6,4.99999 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -490.81963,523.22319 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -440.81963,523.22319 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <g transform="translate(-663.31964,55.874588)" id="g3065">
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="341.8486" style="fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="150" x="172.5" y="317.34863" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;;stroke-dasharray:none;"></rect>
+                    </g>
+                    <path d="m -215.74413,382.689 149.999995,20" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -65.744135,412.689 -149.999995,0" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -215.74413,432.689 149.999995,50" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -215.74413,512.689 149.999995,-80" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -215.74413,492.689 149.999995,-40" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -215.74413,462.689 149.999995,40" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -66.244135,523.189 0,-150 3.6667,0 5.8333,5 -5.8333,5 5.8333,4.99999 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5.00002 -5.8333,5 5.8333,5 -5.8333,4.99998 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -215.24413,523.189 0,-150 -9.5,-1e-5 6,5 -6,5 6,4.99999 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -273.33851,523.20374 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -223.33851,523.20374 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <g transform="translate(-445.83852,55.855139)" id="g3120">
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="341.8486" style="fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="150" x="172.5" y="317.34863" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;;stroke-dasharray:none;"></rect>
+                    </g>
+                    <path d="m -55.429615,523.18238 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m -5.4296149,523.18238 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <g transform="translate(-227.92962,55.833779)" id="g3154">
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="341.8486" style="fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="150" x="172.5" y="317.34863" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;;stroke-dasharray:none;"></rect>
+                    </g>
+                </g>
+                <g id="grammar_convert">
+                    <path d="m 196.56314,378.29075 150,20" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 346.56314,408.29075 -150,0" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 196.56314,428.29075 150,50" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 196.56314,508.29075 150,-80" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 196.56314,488.29075 150,-40" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 196.56314,458.29075 150,40" style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 346.06314,518.79075 0,-150 3.6667,0 5.8333,5 -5.8333,5 5.8333,4.99999 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5 -5.8333,5 5.8333,5.00002 -5.8333,5 5.8333,5 -5.8333,4.99998 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 197.06314,518.79075 0,-150 -9.5,-10e-6 6,5 -6,5 6,4.99999 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 138.96876,518.80549 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 188.96876,518.80549 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <g transform="translate(-33.53125,51.456894)" id="g3091">
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="341.8486" style="fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="150" x="172.5" y="317.34863" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;;stroke-dasharray:none;"></rect>
+                    </g>
+                    <path d="m 355.96875,518.80553 0,-150 -7,0 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5 -6,5 6,5.00002 -6,5 6,5 -6,5 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <path d="m 405.96875,518.80553 0,-150 1.16666,0 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5 -5.83334,5 5.83334,5.00002 -5.83334,5 5.83334,5 -5.83334,4.99998 z" style="fill:#e6e6e6;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+                    <g transform="translate(183.46874,51.456926)" id="g3125">
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="341.8486" style="fill:#3333ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="416.8486" style="fill:#ababff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="391.8486" style="fill:#8383ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="24.000002" x="173" y="317.84863" style="fill:#0b0bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="441.8486" style="fill:#d3d3ff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="25" x="173" y="366.8486" style="fill:#5b5bff;stroke:none;stroke-width:3;"></rect>
+                        <rect width="50" height="150" x="172.5" y="317.34863" style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;;stroke-dasharray:none;"></rect>
+                    </g>
+                    <rect width="240" height="180" rx="10" ry="10" x="185.46875" y="354.30554" style="fill:none;stroke:#ff6600;stroke-width:10;stroke-miterlimit:4;;stroke-dasharray:none;stroke-dashoffset:0"></rect>
+                    <text x="252.14844" y="472.54773" xml:space="preserve" style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;stroke:none;font-family:Arial;"><tspan x="252.14844" y="472.54773" style="font-size:80px;font-weight:bold;fill:#ff6600;">+</tspan></text>
+
+                    <image xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="assets/your_domino.png" height="201.93192" width="326.25217" y="343.33957" x="744.21655"></image>
+                    <g transform="translate(-10,69.999997)" style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"></g>
+                    <path d="m 585.46875,444.33225 q 0,5.66662 -4.0094,9.67601 -4.00939,4.00939 -9.67599,4.00939 -5.66662,0 -9.67601,-4.00939 -4.00939,-4.00939 -4.00939,-9.67601 0,-5.6666 4.00939,-9.67599 4.00939,-4.0094 9.67601,-4.0094 5.6666,0 9.67599,4.0094 4.0094,4.00939 4.0094,9.67599 z m 41.05618,-27.37078 q 0,2.77985 -2.03142,4.81127 -2.03144,2.03143 -4.81128,2.03143 -2.77984,0 -4.81126,-2.03143 -2.03144,-2.03142 -2.03144,-4.81127 0,-2.8333 2.0047,-4.83801 2.0047,-2.00469 4.838,-2.00469 2.83331,0 4.838,2.00469 2.0047,2.00471 2.0047,4.83801 z m 0,54.74157 q 0,2.77983 -2.03142,4.81128 -2.03144,2.0314 -4.81128,2.0314 -2.77984,0 -4.81126,-2.0314 -2.03144,-2.03145 -2.03144,-4.81128 0,-2.8333 2.0047,-4.83799 2.0047,-2.0047 4.838,-2.0047 2.83331,0 4.838,2.0047 2.0047,2.00469 2.0047,4.83799 z m -20.5281,-22.50605 v -9.88984 q 0,-0.53458 -0.3742,-1.04244 -0.37421,-0.50785 -0.85533,-0.56132 l -8.28609,-1.283 q -0.58805,-1.87105 -1.71068,-4.06285 1.8176,-2.56601 4.81128,-6.14773 0.37421,-0.53459 0.37421,-1.06917 0,-0.64151 -0.37421,-1.01572 -1.22955,-1.60376 -4.41033,-4.78454 -3.18078,-3.18079 -4.19649,-3.18079 -0.58805,0 -1.12264,0.37422 l -6.14774,4.81127 q -1.97796,-1.01572 -4.11631,-1.65722 -0.58804,-5.77352 -1.22954,-8.28608 -0.37421,-1.28301 -1.60376,-1.28301 h -9.94329 q -0.58805,0 -1.06917,0.40095 -0.48113,0.40093 -0.53459,0.93552 l -1.22955,8.17916 q -1.81759,0.53459 -4.00939,1.65722 l -6.30811,-4.75781 q -0.37421,-0.37422 -1.06917,-0.37422 -0.58805,0 -1.12263,0.42768 -7.69804,7.10998 -7.69804,8.55337 0,0.48112 0.37422,1.01571 0.53458,0.74841 2.19179,2.8333 1.65722,2.08488 2.51256,3.26097 -1.22955,2.35218 -1.87105,4.3836 l -8.1257,1.28302 q -0.53459,0.0534 -0.9088,0.50784 -0.37421,0.45441 -0.37421,1.04245 v 9.88983 q 0,0.53459 0.37421,1.04245 0.37421,0.50785 0.85533,0.56131 l 8.28608,1.28301 q 0.58805,1.87105 1.71068,4.06285 -1.81759,2.56601 -4.81127,6.14773 -0.37421,0.58804 -0.37421,1.06917 0,0.6415 0.37421,1.06917 1.17609,1.60376 4.3836,4.75781 3.20751,3.15409 4.22323,3.15409 0.58804,0 1.12263,-0.37421 l 6.14773,-4.8113 q 1.81759,0.96225 4.11631,1.71068 0.58805,5.77353 1.22955,8.23263 0.37421,1.28297 1.60376,1.28297 h 9.94329 q 0.58804,0 1.06917,-0.40092 0.48113,-0.40093 0.53459,-0.93553 l 1.22954,-8.17915 q 1.8176,-0.53459 4.00939,-1.65722 l 6.30812,4.75784 q 0.42767,0.37421 1.06918,0.37421 0.58803,0 1.12262,-0.42769 7.69803,-7.10999 7.69803,-8.55338 0,-0.48113 -0.37421,-1.01571 -0.6415,-0.85534 -2.24525,-2.88676 -1.60376,-2.03142 -2.40565,-3.20751 1.22955,-2.56601 1.8176,-4.38361 l 8.12571,-1.22955 q 0.53458,-0.10691 0.90879,-0.56131 0.3742,-0.4544 0.3742,-1.04244 z m 34.21349,-28.49342 v -7.4842 q 0,-0.85533 -7.96532,-1.65721 -0.64151,-1.44339 -1.60376,-2.77985 2.72638,-6.04082 2.72638,-7.37728 0,-0.21384 -0.21383,-0.37422 -6.52194,-3.79555 -6.62886,-3.79555 -0.42767,0 -2.4591,2.51255 -2.03142,2.51255 -2.77984,3.63518 -1.06917,-0.10691 -1.60376,-0.10691 -0.53458,0 -1.60375,0.10691 -0.74843,-1.12263 -2.77985,-3.63518 -2.03142,-2.51255 -2.4591,-2.51255 -0.10691,0 -6.62886,3.79555 -0.21384,0.16038 -0.21384,0.37422 0,1.33646 2.72639,7.37728 -0.96225,1.33646 -1.60375,2.77985 -7.96533,0.80188 -7.96533,1.65721 v 7.4842 q 0,0.85534 7.96533,1.65722 0.69496,1.55029 1.60375,2.77985 -2.72639,6.04081 -2.72639,7.37728 0,0.21383 0.21384,0.37421 0.21384,0.10691 1.87105,1.06917 1.65722,0.96225 3.15406,1.81759 1.49684,0.85533 1.60375,0.85533 0.42768,0 2.4591,-2.48582 2.03142,-2.48583 2.77985,-3.60846 1.06917,0.10692 1.60375,0.10692 0.53459,0 1.60376,-0.10692 2.72638,3.79556 4.91818,5.98737 l 0.32076,0.10691 q 0.21383,0 6.62886,-3.74209 0.21383,-0.16038 0.21383,-0.37421 0,-1.33647 -2.72638,-7.37728 0.90879,-1.22956 1.60376,-2.77985 7.96532,-0.80188 7.96532,-1.65722 z m 0,54.7416 v -7.48422 q 0,-0.85534 -7.96532,-1.65722 -0.64151,-1.44338 -1.60376,-2.77985 2.72638,-6.04081 2.72638,-7.37728 0,-0.21383 -0.21383,-0.37421 -6.52194,-3.79556 -6.62886,-3.79556 -0.42767,0 -2.4591,2.51255 -2.03142,2.51256 -2.77984,3.63519 -1.06917,-0.10692 -1.60376,-0.10692 -0.53458,0 -1.60375,0.10692 -0.74843,-1.12263 -2.77985,-3.63519 -2.03142,-2.51255 -2.4591,-2.51255 -0.10691,0 -6.62886,3.79556 -0.21384,0.16038 -0.21384,0.37421 0,1.33647 2.72639,7.37728 -0.96225,1.33647 -1.60375,2.77985 -7.96533,0.80188 -7.96533,1.65722 v 7.48422 q 0,0.85533 7.96533,1.65719 0.69496,1.55032 1.60375,2.77987 -2.72639,6.04078 -2.72639,7.37728 0,0.21383 0.21384,0.37417 0.21384,0.10696 1.87105,1.0692 1.65722,0.96225 3.15406,1.81758 1.49684,0.85534 1.60375,0.85534 0.42768,0 2.4591,-2.48581 2.03142,-2.48586 2.77985,-3.60845 1.06917,0.10691 1.60375,0.10691 0.53459,0 1.60376,-0.10691 2.72638,3.79556 4.91818,5.98735 l 0.32076,0.10691 q 0.21383,0 6.62886,-3.74212 0.21383,-0.16034 0.21383,-0.37417 0,-1.3365 -2.72638,-7.37728 0.90879,-1.22955 1.60376,-2.77987 7.96532,-0.80186 7.96532,-1.65719 z" style="fill:#ffffff;stroke:#000000;stroke-width:0.05345857px;stroke-linecap:butt;stroke-linejoin:miter;"></path>
+
+                    <path d="m 41.269573,439.30553 43,0 -4,-15 2,-1 17,20 -17,21 -2,-1 4,-15 -43,0 z" style="fill:#ffffff;stroke:none;"></path>
+                    <path d="m 455.92941,439.30553 43,0 -4,-15 2,-1 17,20 -17,21 -2,-1 4,-15 -43,0 z" style="fill:#ffffff;stroke:none;"></path>
+                    <path d="m 658.7447,439.30553 43,0 -4,-15 2,-1 17,20 -17,21 -2,-1 4,-15 -43,0 z" style="fill:#ffffff;stroke:none;"></path>
+                    <g transform="translate(-5,0)">
+                        <text x="137.12807" y="563.10583" xml:space="preserve" style="font-size:16.5px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;stroke:none;font-family:'Courier New';"><tspan><tspan style="fill:#ff7f2a">axis</tspan> = numerical_block </tspan><tspan
+         x="137.12807" y="588.16595">       shown_as &quot;<tspan style="font-style:oblique;">1D scatterplot</tspan>&quot;</tspan><tspan x="137.12807" y="613.17834"><tspan style="fill:#ff7f2a">axis</tspan> right_of <tspan style="fill:#ff7f2a">axis </tspan></tspan><tspan x="137.12807" y="638.19073">     connecting items </tspan></text>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </svg>
+    <script>
+        d3.select('#grammar2 svg > g').attr('transform','translate(450,0)');
+        d3.select('#grammar_convert').attr('transform','translate(250,0)');
+        addFragment(function() {
+            d3.select('#grammar2 svg > g').transition().duration(1000).attr('transform','translate(0,0)');
+            d3.select('#grammar_convert').transition().duration(1000).attr('transform','translate(0,0)');
+        }, function() {
+            d3.select('#grammar2 svg > g').attr('transform','translate(450,0)');
+            d3.select('#grammar_convert').attr('transform','translate(250,0)');
+        });
+        addFragment(function() {
+            d3.select('#grammar2 svg > g').transition().duration(1000).attr('transform','translate(-1220,0)');
+        }, function() {
+            d3.select('#grammar2 svg > g').attr('transform','translate(0,0)');
+        });
+    </script>
+</section>
+
+<section id="end" data-state="nofooter" >
+    <h1 style="padding-top: 0.5em">Domino</h1>
+
+    <h3 style="text-align: left;">Extracting, Comparing, and Manipulating Subsets <br>across Multiple Tabular Datasets</h3>
+    <h4 style="text-align: left; padding-left: 40px; font-size: 120%; padding-top: 10px"><strong>Samuel Gratzl</strong>, Nils Gehlenborg, Alexander Lex, Hanspeter Pfister, and Marc Streit</h4>
+    <img src="assets/logos/caleydo_text_below.svg" class="fixed caleydo_title">
+
+    <img src="assets/number_one_f.png" style="position: absolute; left: 70px; top: 12.8em; width: 68%;">
+
+    <div style="position: absolute; right: 1em; width: 23%; top: 13em; text-align: left">
+        <div style="text-align: left; font-size: 80%">
+        <p><i class="fa fa-envelope-o"></i> <a href="mailto:samuel.gratzl@jku.at">samuel.gratzl@jku.at</a></p>
+        <p><i class="fa fa-external-link"></i> <a href="http://domino.caleydo.org">domino.caleydo.org</a></p>
+        <p><i class="fa fa-github"></i> <a href="https://github.com/caleydo">github.com/caleydo</a></p>
+        </div>
+        <img style="margin-left: 12px; margin-top: 0.2em; margin-bottom: 10px" src="assets/logos/jku.png" class="fixed" width="55%">
+        <img style="margin-left: 12px; margin-bottom: 10px" src="assets/logos/hms.png" class="fixed" width="75%">
+        <img style="margin-left: 12px;" src="assets/logos/seas.png" class="fixed" width="65%">
+    </div>
+    <div style="position: absolute; left: 70px; top: 31em; width: 68%; font-size: 80%">
+        <i class="fa fa-external-link"></i>&nbsp;<a href="https://github.com/caleydo">caleydo.org</a>&nbsp;&nbsp;&nbsp;
+        <i class="fa fa-github"></i>&nbsp;<a href="https://github.com/caleydo">github.com/caleydo</a>&nbsp;&nbsp;&nbsp;
+        <i class="fa fa-twitter"></i>&nbsp;<a href="https://twitter.com/caleydo_org">twitter.com/caleydo_org</a>
+    </div>
+</section>
+
+<section id="references">
+    <h2>References</h2>
+    <ol style="font-size: 70%; list-style: none outside none;">
+        <li><span class="revi">[Claessen and van Wijk, 2011]</span> J. H. Claessen and J. J. van Wijk, “Flexible Linked Axes for Multivariate Data Visualization,” IEEE Transactions on Visualization and Computer Graphics (InfoVis ’11), vol. 17, no. 12, pp. 2310–2316, 2011.
+        </li>
+        <li><span class="revi">[Viau and McGuffin, 2012]</span> C. Viau and M. J. McGuffin, “ConnectedCharts: Explicit Visualization of Relationships between Data Graphics,” Computer Graphics Forum, vol. 31, no. 3pt4, pp. 1285–1294, 2012.
+        </li>
+        <li><span class="revi">[The Cancer Genome Atlas Research Network et al., 2014]</span> The Cancer Genome Atlas Research Network et al., “Integrated Genomic Characterization of Papillary Thyroid Carcinoma“, Cell 159, 676–690, 2014.
+        </li>
+        <li><span class="revi">[Inselberg, 1985]</span> A. Inselberg, “The plane with parallel coordinates”, The Visual Computer 1, 69–91, 1985.
+        </li>
+        <li><span class="revi">[Kosara etal, 2006]</span> R. Kosara, F. Bendix, and H. Hauser, “Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data,” IEEE Transactions on Visualization and Computer Graphics, vol. 12, no. 4, pp. 558–568, 2006.
+        </li>
+        <li><span class="revi">[Lex et al., 2010]</span> A. Lex, M. Streit, C. Partl, K. Kashofer, and D. Schmalstieg, “Comparative Analysis of Multidimensional, Quantitative Data,” IEEE Transactions on Visualization and Computer Graphics&nbsp; (InfoVis ’10), vol. 16, no. 6, pp. 1027–1035, 2010.
+        </li>
+        <li><span class="revi">[Lex et al., 2011]</span> A. Lex, M. Streit, H.-J. Schulz, C. Partl, D. Schmalstieg, 2011. VisBricks: Multiform Visualization of Large, Inhomogeneous Data. IEEE Transactions on Visualization and Computer Graphics (InfoVis ’11) 17, 2291–2300, 2011
+        </li>
+        <li><span class="revi">[Lex et al., 2012]</span> A. Lex, M. Streit, H.-J. Schulz, C. Partl, D. Schmalstieg, P. J. Park, and N. Gehlenborg, “StratomeX: Visual Analysis of Large-Scale Heterogeneous Genomics Data for Cancer Subtype Characterization” Computer Graphics Forum (EuroVis ’12), vol. 31, no. 3, pp. 1175–1184, 2012.
+        </li>
+        <li><span class="revi">[Streit et al., 2014]</span> M. Streit, A. Lex, S. Gratzl, C. Partl, D. Schmalstieg, H. Pfister, P.J. Park, N. Gehlenborg, “Guided visual exploration of genomic stratifications in cancer”. Nature Methods 11, 884–885, 2014.
+        </li>
+
+    </ol>
+</section>
+
+<section id="band_mode">
+    <img width="45%" src="assets/bandmode/normal.png" style="margin: 200px 20px">
+    <img width="45%" src="assets/bandmode/outer.png" style="margin: 200px 20px">
+</section>
+
+</div>
+</div>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: false,
+        progress: false,
+        history: true,
+        center: false,
+        slideNumber: true,
+
+        width: 1920,
+        height: 1080,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.02,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 2.0,
+
+        theme: 'night', // available themes are in /css/theme
+        transition: 'fade', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            { src: 'lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            } },
+            //{ src: 'plugin/search/search.js', condition: function() { return !!document.body.classList; } },
+            { src: 'plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            } },
+            { src: 'plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            } },
+            { src: 'plugin/notes/notes.js', async: true, condition: function () {
+                return !!document.body.classList;
+            } }
+        ]
+    });
+
+</script>
+</body>
+</html>
